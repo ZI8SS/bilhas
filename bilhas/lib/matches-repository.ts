@@ -21,7 +21,20 @@ type MatchRow = {
   comments: BilhasComment[] | null;
 };
 
-function readableStatus(status: string) {
+function isToday(value: Date | string | null) {
+  if (!value) return false;
+
+  const date = new Date(value);
+  const today = new Date();
+
+  return date.toISOString().slice(0, 10) === today.toISOString().slice(0, 10);
+}
+
+function readableStatus(status: string, startsAt: Date | string | null) {
+  if (status === "scheduled" && startsAt && !isToday(startsAt)) {
+    return "Agendado";
+  }
+
   const labels: Record<string, string> = {
     scheduled: "Hoje",
     live: "Ao vivo",
@@ -39,7 +52,7 @@ function mapMatch(row: MatchRow): Match {
     id: row.public_id,
     competition: row.competition,
     minute: row.minute,
-    status: readableStatus(row.status),
+    status: readableStatus(row.status, row.starts_at),
     startsAt: row.starts_at ? new Date(row.starts_at).toISOString() : null,
     home: {
       name: row.home_name,
