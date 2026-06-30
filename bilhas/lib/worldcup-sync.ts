@@ -177,11 +177,12 @@ async function upsertGame(game: WorldCupGame) {
   return { comments, events, matches: 1, teams: 2 };
 }
 
-export async function syncWorldCupToDatabase(): Promise<SyncStats> {
+export async function syncWorldCupToDatabase(ids?: string[]): Promise<SyncStats> {
   const games = await getWorldCupGames();
+  const selectedGames = ids?.length ? games.filter((game) => ids.includes(game.id)) : games;
   const stats: SyncStats = { comments: 0, events: 0, matches: 0, teams: 0 };
 
-  for (const game of games) {
+  for (const game of selectedGames) {
     const result = await upsertGame(game);
     stats.comments += result.comments;
     stats.events += result.events;

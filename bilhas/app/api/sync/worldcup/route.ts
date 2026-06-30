@@ -21,7 +21,12 @@ async function sync(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "database_not_configured" }, { status: 503 });
   }
 
-  const stats = await syncWorldCupToDatabase();
+  const ids = request.nextUrl.searchParams
+    .get("ids")
+    ?.split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  const stats = await syncWorldCupToDatabase(ids);
 
   return NextResponse.json({ ok: true, stats });
 }
