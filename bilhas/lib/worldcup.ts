@@ -103,6 +103,14 @@ const stageNames: Record<string, string> = {
   sf: "Mundial 2026 - Meias",
 };
 
+const portugalKickoffOverrides: Record<string, string> = {
+  // Source cross-check, 30 Jun 2026:
+  // Ivory Coast-Norway 1pm ET, France-Sweden 5pm ET, Mexico-Ecuador 9pm ET.
+  "77": "2026-06-30T21:00:00.000Z",
+  "78": "2026-06-30T17:00:00.000Z",
+  "79": "2026-07-01T01:00:00.000Z",
+};
+
 function teamName(name?: string) {
   if (!name) return "A definir";
   return teamNames[name] ?? name;
@@ -147,8 +155,8 @@ export function worldCupTeamColor(name?: string) {
   return teamColors[name ?? ""] ?? "#555555";
 }
 
-export function parseWorldCupDate(value?: string) {
-  return parseDate(value);
+export function parseWorldCupDate(game: WorldCupGame) {
+  return kickoffDate(game);
 }
 
 function parseDate(value?: string) {
@@ -159,29 +167,48 @@ function parseDate(value?: string) {
   return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)));
 }
 
-function isSameUtcDay(left: Date, right: Date) {
-  return (
-    left.getUTCFullYear() === right.getUTCFullYear() &&
-    left.getUTCMonth() === right.getUTCMonth() &&
-    left.getUTCDate() === right.getUTCDate()
-  );
+function kickoffDate(game: WorldCupGame) {
+  const override = portugalKickoffOverrides[game.id];
+  if (override) return new Date(override);
+
+  return parseDate(game.local_date);
 }
 
-function displayKickoff(value?: string, now = new Date()) {
-  const match = value?.match(/^(\d{2})\/(\d{2})\/\d{4} (\d{2}:\d{2})$/);
-  if (!match) return "Brevemente";
+function portugalParts(date: Date) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+    minute: "2-digit",
+    month: "2-digit",
+    timeZone: "Europe/Lisbon",
+    year: "numeric",
+  }).formatToParts(date);
 
-  const date = parseDate(value);
-  if (date && isSameUtcDay(date, now)) return match[3];
+  return Object.fromEntries(parts.map((part) => [part.type, part.value]));
+}
 
-  return `${match[2]}/${match[1]} ${match[3]}`;
+function portugalDayKey(date: Date) {
+  const parts = portugalParts(date);
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+function displayKickoff(date: Date | null, now = new Date()) {
+  if (!date) return "Brevemente";
+
+  const parts = portugalParts(date);
+  const time = `${parts.hour}h${parts.minute}`;
+
+  if (portugalDayKey(date) === portugalDayKey(now)) return time;
+
+  return `${parts.day}/${parts.month} ${time}`;
 }
 
 function status(game: WorldCupGame, now = new Date()) {
   if (game.finished?.toUpperCase() === "TRUE") return "Terminado";
   if (game.time_elapsed && game.time_elapsed !== "notstarted") return "Ao vivo";
-  const date = parseDate(game.local_date);
-  if (date && !isSameUtcDay(date, now)) return "Agendado";
+  const date = kickoffDate(game);
+  if (date && portugalDayKey(date) !== portugalDayKey(now)) return "Agendado";
   return "Hoje";
 }
 
@@ -240,18 +267,25 @@ function commentForEvent(game: WorldCupGame, event: MatchEvent, index: number): 
 function previewComment(game: WorldCupGame): BilhasComment {
   const home = teamName(game.home_team_name_en);
   const away = teamName(game.away_team_name_en);
+  const templates = [
+    `${home}-${away} a caminho. Jogo de mata-mata, que e a forma elegante de dizer que hoje ate um lateral pode virar personagem principal.`,
+    `Daqui a pouco ha ${home}-${away}. Os nervos ja estao no aquecimento e ainda nem pediram autorizacao ao quarto arbitro.`,
+    `${home} contra ${away}. No papel e futebol; na pratica pode ser terapia de grupo com relvado e descontos de tempo.`,
+    `Pre-jogo de ${home}-${away}. Toda a gente tem plano ate a primeira bola bater num joelho e mudar a historia.`,
+  ];
+  const index = Number.parseInt(game.id, 10) % templates.length;
 
   return {
     id: `wc-${game.id}-pre`,
     minute: "Pre",
     intensity: "leve",
     featured: true,
-    text: `${home}-${away} a caminho. Nesta fase do Mundial, qualquer jogo pode ser historico ou so uma forma cara de descobrir quem aguenta melhor os nervos.`,
+    text: templates[index],
   };
 }
 
 function isRelevant(game: WorldCupGame, now: Date) {
-  const date = parseDate(game.local_date);
+  const date = kickoffDate(game);
   if (!date) return false;
 
   const twoDaysAgo = new Date(now);
@@ -269,13 +303,14 @@ function mapGame(game: WorldCupGame): Match {
   const events = eventsFor(game);
   const comments = events.length > 0 ? events.map((event, index) => commentForEvent(game, event, index)) : [previewComment(game)];
   const currentStatus = status(game);
+  const startsAt = kickoffDate(game);
 
   return {
     id: publicId(game),
     competition: competition(game),
-    minute: currentStatus === "Hoje" || currentStatus === "Agendado" ? displayKickoff(game.local_date) : "Fim",
+    minute: currentStatus === "Hoje" || currentStatus === "Agendado" ? displayKickoff(startsAt) : "Fim",
     status: currentStatus,
-    startsAt: parseDate(game.local_date)?.toISOString() ?? null,
+    startsAt: startsAt?.toISOString() ?? null,
     home: {
       name: teamName(game.home_team_name_en),
       short: shortName(game.home_team_name_en),
@@ -318,6 +353,6 @@ export async function getWorldCupMatches() {
   const selected = relevant.length > 0 ? relevant : games.slice(-16);
 
   return selected
-    .sort((left, right) => Number(parseDate(left.local_date)) - Number(parseDate(right.local_date)))
+    .sort((left, right) => Number(kickoffDate(left)) - Number(kickoffDate(right)))
     .map(mapGame);
 }

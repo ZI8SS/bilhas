@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Match, Team } from "@/lib/types";
 import { scoreText } from "@/lib/data";
+import { timeText } from "@/lib/match-format";
 
 function HeroTeam({ team }: { team: Team }) {
   return (
@@ -29,7 +30,7 @@ export function MatchHero({ match }: { match: Match }) {
         <HeroTeam team={match.home} />
         <div className="scoreboard">
           <span>
-            {match.competition} · {match.minute}
+            {match.competition} · {timeText(match.minute)}
           </span>
           <strong>{scoreText(match)}</strong>
           <span>{match.status}</span>

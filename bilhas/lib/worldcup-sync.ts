@@ -69,7 +69,7 @@ async function upsertGame(game: WorldCupGame) {
   const match = mapWorldCupGame(game);
   const homeTeamId = await upsertTeam(game.home_team_name_en, `home-${game.id}`);
   const awayTeamId = await upsertTeam(game.away_team_name_en, `away-${game.id}`);
-  const startsAt = parseWorldCupDate(game.local_date);
+  const startsAt = parseWorldCupDate(game);
 
   const matchRows = await sql<{ id: string }[]>`
     INSERT INTO matches (
@@ -161,6 +161,15 @@ async function upsertGame(game: WorldCupGame) {
       ON CONFLICT (public_id) DO NOTHING
       RETURNING id
     `;
+
+    if (rows.length === 0 && comment.id.endsWith("-pre")) {
+      await sql`
+        UPDATE bilhas_comments
+        SET body = ${comment.text}, updated_at = now()
+        WHERE public_id = ${comment.id}
+          AND body LIKE '%Nesta fase do Mundial, qualquer jogo pode ser historico%'
+      `;
+    }
 
     comments += rows.length;
   }

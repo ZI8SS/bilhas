@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const matches = await getMatches();
-  const liveMatches = matches.filter((match) => match.status === "Ao vivo").length;
+  const liveMatches = matches.filter((match) => match.status === "Ao vivo" || match.status === "A decorrer").length;
   const best = await featuredComments();
   const schedule = groupMatchesByDay(matches);
 

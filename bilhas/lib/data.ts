@@ -1,4 +1,5 @@
 import type { Match } from "./types";
+import { scoreText as formattedScoreText } from "./match-format";
 
 export const matches: Match[] = [
   {
@@ -142,9 +143,7 @@ export function getMatch(id: string) {
 }
 
 export function scoreText(match: Match) {
-  const home = match.home.score ?? "-";
-  const away = match.away.score ?? "-";
-  return `${home}-${away}`;
+  return formattedScoreText(match);
 }
 
 export function featuredComments() {

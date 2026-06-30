@@ -21,18 +21,35 @@ type MatchRow = {
   comments: BilhasComment[] | null;
 };
 
-function isToday(value: Date | string | null) {
-  if (!value) return false;
-
+function lisbonDayKey(value: Date | string) {
   const date = new Date(value);
-  const today = new Date();
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: "Europe/Lisbon",
+    year: "numeric",
+  }).formatToParts(date);
 
-  return date.toISOString().slice(0, 10) === today.toISOString().slice(0, 10);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
 }
 
-function readableStatus(status: string, startsAt: Date | string | null) {
-  if (status === "scheduled" && startsAt && !isToday(startsAt)) {
-    return "Agendado";
+function isToday(value: Date | string | null) {
+  if (!value) return false;
+  return lisbonDayKey(value) === lisbonDayKey(new Date());
+}
+
+function readableStatus(row: MatchRow) {
+  if (row.status === "scheduled" && row.starts_at) {
+    const startsAt = new Date(row.starts_at);
+    const now = new Date();
+    const hasScore = row.home_score !== null || row.away_score !== null;
+
+    if (now.getTime() >= startsAt.getTime()) {
+      return hasScore ? "A decorrer" : "Por atualizar";
+    }
+
+    return isToday(row.starts_at) ? "Hoje" : "Agendado";
   }
 
   const labels: Record<string, string> = {
@@ -44,7 +61,7 @@ function readableStatus(status: string, startsAt: Date | string | null) {
     cancelled: "Cancelado",
   };
 
-  return labels[status] ?? status;
+  return labels[row.status] ?? row.status;
 }
 
 function mapMatch(row: MatchRow): Match {
@@ -52,7 +69,7 @@ function mapMatch(row: MatchRow): Match {
     id: row.public_id,
     competition: row.competition,
     minute: row.minute,
-    status: readableStatus(row.status, row.starts_at),
+    status: readableStatus(row),
     startsAt: row.starts_at ? new Date(row.starts_at).toISOString() : null,
     home: {
       name: row.home_name,
@@ -154,9 +171,11 @@ export async function getMatch(id: string): Promise<Match | undefined> {
 export async function featuredComments() {
   const allMatches = await getMatches();
 
-  return allMatches.flatMap((match) =>
-    match.comments
-      .filter((comment) => comment.featured)
-      .map((comment) => ({ match, comment })),
-  );
+  return allMatches
+    .flatMap((match) =>
+      match.comments
+        .filter((comment) => comment.featured)
+        .map((comment) => ({ match, comment })),
+    )
+    .slice(0, 8);
 }
