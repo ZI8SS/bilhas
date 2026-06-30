@@ -25,6 +25,7 @@ const teamNames: Record<string, string> = {
   Argentina: "Argentina",
   Australia: "Australia",
   Austria: "Austria",
+  Belgium: "Belgica",
   Brazil: "Brasil",
   Canada: "Canada",
   "Cape Verde": "Cabo Verde",
@@ -125,14 +126,29 @@ function parseDate(value?: string) {
   return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)));
 }
 
-function displayKickoff(value?: string) {
-  const match = value?.match(/^\d{2}\/\d{2}\/\d{4} (\d{2}:\d{2})$/);
-  return match?.[1] ?? "Brevemente";
+function isSameUtcDay(left: Date, right: Date) {
+  return (
+    left.getUTCFullYear() === right.getUTCFullYear() &&
+    left.getUTCMonth() === right.getUTCMonth() &&
+    left.getUTCDate() === right.getUTCDate()
+  );
 }
 
-function status(game: WorldCupGame) {
+function displayKickoff(value?: string, now = new Date()) {
+  const match = value?.match(/^(\d{2})\/(\d{2})\/\d{4} (\d{2}:\d{2})$/);
+  if (!match) return "Brevemente";
+
+  const date = parseDate(value);
+  if (date && isSameUtcDay(date, now)) return match[3];
+
+  return `${match[2]}/${match[1]} ${match[3]}`;
+}
+
+function status(game: WorldCupGame, now = new Date()) {
   if (game.finished?.toUpperCase() === "TRUE") return "Terminado";
   if (game.time_elapsed && game.time_elapsed !== "notstarted") return "Ao vivo";
+  const date = parseDate(game.local_date);
+  if (date && !isSameUtcDay(date, now)) return "Agendado";
   return "Hoje";
 }
 
@@ -219,12 +235,13 @@ function isRelevant(game: WorldCupGame, now: Date) {
 function mapGame(game: WorldCupGame): Match {
   const events = eventsFor(game);
   const comments = events.length > 0 ? events.map((event, index) => commentForEvent(game, event, index)) : [previewComment(game)];
+  const currentStatus = status(game);
 
   return {
     id: publicId(game),
     competition: competition(game),
-    minute: status(game) === "Hoje" ? displayKickoff(game.local_date) : "Fim",
-    status: status(game),
+    minute: currentStatus === "Hoje" || currentStatus === "Agendado" ? displayKickoff(game.local_date) : "Fim",
+    status: currentStatus,
     home: {
       name: teamName(game.home_team_name_en),
       short: shortName(game.home_team_name_en),
