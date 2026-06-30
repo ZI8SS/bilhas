@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MatchRow } from "@/components/MatchRow";
 import { scoreText } from "@/lib/data";
 import { featuredComments, getMatches } from "@/lib/matches-repository";
+import { groupMatchesByDay } from "@/lib/schedule";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,7 @@ export default async function HomePage() {
   const matches = await getMatches();
   const liveMatches = matches.filter((match) => match.status === "Ao vivo").length;
   const best = await featuredComments();
+  const schedule = groupMatchesByDay(matches);
 
   return (
     <>
@@ -28,9 +30,19 @@ export default async function HomePage() {
       </section>
 
       <section className="layout">
-        <div className="match-list panel" aria-label="Jogos">
-          {matches.map((match) => (
-            <MatchRow match={match} key={match.id} />
+        <div className="schedule-list panel" aria-label="Agenda do Mundial">
+          {schedule.map((group) => (
+            <section className="schedule-day" key={group.key}>
+              <header className="schedule-day-header">
+                <h2>{group.label}</h2>
+                <span className="pill">{group.matches.length} jogos</span>
+              </header>
+              <div className="match-list">
+                {group.matches.map((match) => (
+                  <MatchRow match={match} key={match.id} />
+                ))}
+              </div>
+            </section>
           ))}
         </div>
         <aside className="side-panel panel">

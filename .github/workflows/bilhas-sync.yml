@@ -1,0 +1,24 @@
+name: Bilhas World Cup Sync
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Sync World Cup data
+        env:
+          BILHAS_SYNC_SECRET: ${{ secrets.BILHAS_SYNC_SECRET }}
+        run: |
+          if [ -z "$BILHAS_SYNC_SECRET" ]; then
+            echo "Missing BILHAS_SYNC_SECRET repository secret."
+            exit 1
+          fi
+
+          curl --fail-with-body --request POST \
+            --header "Authorization: Bearer $BILHAS_SYNC_SECRET" \
+            https://bilhas.vercel.app/api/sync/worldcup

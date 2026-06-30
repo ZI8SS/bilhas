@@ -6,6 +6,7 @@ import { getWorldCupMatches } from "./worldcup";
 type MatchRow = {
   public_id: string;
   competition: string;
+  starts_at: Date | string | null;
   minute: string;
   status: string;
   home_name: string;
@@ -39,6 +40,7 @@ function mapMatch(row: MatchRow): Match {
     competition: row.competition,
     minute: row.minute,
     status: readableStatus(row.status),
+    startsAt: row.starts_at ? new Date(row.starts_at).toISOString() : null,
     home: {
       name: row.home_name,
       short: row.home_short,
@@ -78,6 +80,7 @@ export async function getMatches(): Promise<Match[]> {
     SELECT
       matches.public_id,
       matches.competition,
+      matches.starts_at,
       matches.minute,
       matches.status::text AS status,
       home.name AS home_name,
@@ -122,6 +125,8 @@ export async function getMatches(): Promise<Match[]> {
       WHERE bilhas_comments.match_id = matches.id
         AND bilhas_comments.published_at IS NOT NULL
     ) comments ON true
+    WHERE matches.starts_at IS NULL
+      OR matches.starts_at BETWEEN now() - interval '2 days' AND now() + interval '14 days'
     ORDER BY matches.starts_at NULLS LAST, matches.created_at
   `;
 

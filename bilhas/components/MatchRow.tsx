@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { matchDateLabel } from "@/lib/schedule";
 import type { Match, Team } from "@/lib/types";
 
 function TeamLine({ team }: { team: Team }) {
@@ -25,7 +26,10 @@ export function MatchRow({ match }: { match: Match }) {
         } as CSSProperties
       }
     >
-      <span className="minute">{match.minute}</span>
+      <span className="minute">
+        <strong>{match.minute}</strong>
+        <small>{matchDateLabel(match)}</small>
+      </span>
       <div className="teams">
         <TeamLine team={match.home} />
         <TeamLine team={match.away} />

@@ -275,6 +275,7 @@ function mapGame(game: WorldCupGame): Match {
     competition: competition(game),
     minute: currentStatus === "Hoje" || currentStatus === "Agendado" ? displayKickoff(game.local_date) : "Fim",
     status: currentStatus,
+    startsAt: parseDate(game.local_date)?.toISOString() ?? null,
     home: {
       name: teamName(game.home_team_name_en),
       short: shortName(game.home_team_name_en),

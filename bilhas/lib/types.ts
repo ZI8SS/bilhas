@@ -25,6 +25,7 @@ export type Match = {
   competition: string;
   minute: string;
   status: string;
+  startsAt?: string | null;
   home: Team;
   away: Team;
   events: MatchEvent[];
