@@ -1,6 +1,6 @@
 import type { BilhasComment, Match, MatchEvent } from "./types";
 
-type WorldCupGame = {
+export type WorldCupGame = {
   id: string;
   home_team_name_en?: string;
   away_team_name_en?: string;
@@ -116,6 +116,26 @@ function parseScore(value?: string | null) {
   if (!value || value === "null") return null;
   const score = Number.parseInt(value, 10);
   return Number.isFinite(score) ? score : null;
+}
+
+export function worldCupPublicId(game: WorldCupGame) {
+  return publicId(game);
+}
+
+export function worldCupTeamName(name?: string) {
+  return teamName(name);
+}
+
+export function worldCupTeamShortName(name?: string) {
+  return shortName(name);
+}
+
+export function worldCupTeamColor(name?: string) {
+  return teamColors[name ?? ""] ?? "#555555";
+}
+
+export function parseWorldCupDate(value?: string) {
+  return parseDate(value);
 }
 
 function parseDate(value?: string) {
@@ -259,7 +279,11 @@ function mapGame(game: WorldCupGame): Match {
   };
 }
 
-export async function getWorldCupMatches() {
+export function mapWorldCupGame(game: WorldCupGame) {
+  return mapGame(game);
+}
+
+export async function getWorldCupGames() {
   const response = await fetch(endpoint, {
     headers: { accept: "application/json" },
     next: { revalidate: 60 },
@@ -270,7 +294,11 @@ export async function getWorldCupMatches() {
   }
 
   const data = (await response.json()) as WorldCupResponse;
-  const games = data.games ?? [];
+  return data.games ?? [];
+}
+
+export async function getWorldCupMatches() {
+  const games = await getWorldCupGames();
   const now = new Date();
   const relevant = games.filter((game) => isRelevant(game, now));
   const selected = relevant.length > 0 ? relevant : games.slice(-16);

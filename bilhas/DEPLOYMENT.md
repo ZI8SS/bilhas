@@ -26,15 +26,16 @@ Eu consigo preparar tudo localmente, mas para criar recursos externos é preciso
 
 ## Deploy Rápido Sem DB
 
-Isto serve só para mostrar a app com dados mockados.
+Isto serve para mostrar a app sem Supabase. Neste modo a app tenta usar a fonte externa do Mundial e cai para dados demo se a fonte falhar.
 
-Variável no Vercel:
+Variáveis no Vercel:
 
 ```text
 ALLOW_MOCK_DATA=true
+WORLD_CUP_SOURCE=enabled
 ```
 
-Não usar isto como produção real.
+Não usar isto como produção real de longo prazo, porque não guarda cache, histórico editorial nem comentários editados.
 
 ## Deploy Com Supabase
 
@@ -46,16 +47,26 @@ Não usar isto como produção real.
 DATABASE_URL=postgres://...
 DATABASE_SSL=true
 ALLOW_MOCK_DATA=false
+WORLD_CUP_SOURCE=enabled
+SYNC_SECRET=um_valor_longo_aleatorio
 ```
 
 4. Correr migrations:
 
 ```bash
 DATABASE_URL="postgres://..." DATABASE_SSL=true pnpm db:migrate
-DATABASE_URL="postgres://..." DATABASE_SSL=true pnpm db:seed
 ```
 
 5. Fazer redeploy na Vercel.
+6. Sincronizar o Mundial para a base:
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer $SYNC_SECRET" \
+  https://bilhas.vercel.app/api/sync/worldcup
+```
+
+Depois disto, `/api/health` deve indicar `database: "postgres"` e a app deve ler da base de dados.
 
 ## Vercel Settings
 
@@ -80,13 +91,13 @@ Depois do deploy:
 Respostas esperadas:
 
 ```json
-{ "ok": true, "database": "mock" }
+{ "ok": true, "database": "none", "source": "worldcup-api" }
 ```
 
 ou:
 
 ```json
-{ "ok": true, "database": "postgres" }
+{ "ok": true, "database": "postgres", "source": "database" }
 ```
 
 ## Próxima Fase
