@@ -205,7 +205,7 @@ function displayKickoff(date: Date | null, now = new Date()) {
 }
 
 function status(game: WorldCupGame, now = new Date()) {
-  if (game.finished?.toUpperCase() === "TRUE") return "Terminado";
+  if (game.finished?.toUpperCase() === "TRUE" || game.time_elapsed === "finished") return "Terminado";
   if (game.time_elapsed && game.time_elapsed !== "notstarted") return "Ao vivo";
   const date = kickoffDate(game);
   if (date && portugalDayKey(date) !== portugalDayKey(now)) return "Agendado";
