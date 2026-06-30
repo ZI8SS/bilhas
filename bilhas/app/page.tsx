@@ -14,11 +14,11 @@ export default async function HomePage() {
     <>
       <section className="hero-panel">
         <div>
-          <span className="eyebrow">Live score com ma lingua saudavel</span>
-          <h1>Resultados ao vivo, mas com alguem acordado a escrever.</h1>
+          <span className="eyebrow">Mundial 2026 com ma lingua saudavel</span>
+          <h1>Jogos ao vivo, mas com alguem acordado a escrever.</h1>
           <p>
-            Segue os jogos, apanha os momentos estranhos e partilha a frase do Bilhas quando o VAR, o frango
-            ou a defesa pedirem intervencao editorial.
+            Segue os jogos do Mundial, apanha os momentos estranhos e partilha a frase do Bilhas quando o VAR,
+            o frango ou a defesa pedirem intervencao editorial.
           </p>
         </div>
         <span className="pill">

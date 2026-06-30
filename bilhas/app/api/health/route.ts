@@ -7,7 +7,8 @@ export async function GET() {
   if (!hasDatabase || !sql) {
     return NextResponse.json({
       ok: true,
-      database: "mock",
+      database: "none",
+      source: process.env.WORLD_CUP_SOURCE === "disabled" ? "mock" : "worldcup-api",
     });
   }
 
@@ -16,5 +17,6 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     database: "postgres",
+    source: "database",
   });
 }

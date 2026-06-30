@@ -1,6 +1,7 @@
 import { matches as mockMatches } from "./data";
 import { hasDatabase, requireDatabase } from "./db";
 import type { BilhasComment, Match, MatchEvent } from "./types";
+import { getWorldCupMatches } from "./worldcup";
 
 type MatchRow = {
   public_id: string;
@@ -57,6 +58,14 @@ function mapMatch(row: MatchRow): Match {
 
 export async function getMatches(): Promise<Match[]> {
   if (!hasDatabase) {
+    if (process.env.WORLD_CUP_SOURCE !== "disabled") {
+      try {
+        return await getWorldCupMatches();
+      } catch (error) {
+        console.error("World Cup source unavailable, falling back to local demo data.", error);
+      }
+    }
+
     if (process.env.NODE_ENV === "production" && process.env.ALLOW_MOCK_DATA !== "true") {
       requireDatabase();
     }
