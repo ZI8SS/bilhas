@@ -142,7 +142,7 @@ Opcoes:
 
 Para Portugal, um `.pt` faz sentido se quisermos identidade local. Para produto/app, `.app` tambem e interessante, mas costuma exigir HTTPS e pode ser mais caro.
 
-## Minha Escolha Para O Bilhas
+## Minha Escolha Para bilhas
 
 ### Fase Demo
 

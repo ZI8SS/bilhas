@@ -5,7 +5,7 @@ Como nao ha conector Notion disponivel nesta sessao, o caminho mais simples e im
 ## Como Importar
 
 1. Abrir o Notion.
-2. Criar uma pagina nova chamada `O Bilhas`.
+2. Criar uma pagina nova chamada `bilhas`.
 3. Escolher `Import`.
 4. Selecionar `CSV`.
 5. Importar `NOTION_IMPORT_TASKS.csv`.

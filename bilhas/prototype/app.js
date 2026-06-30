@@ -189,7 +189,7 @@ function showToast(message) {
 
 async function shareComment(matchId, comment) {
   const match = matches.find((item) => item.id === matchId);
-  const title = `O Bilhas · ${match.home.short} ${scoreText(match)} ${match.away.short}`;
+  const title = `bilhas · ${match.home.short} ${scoreText(match)} ${match.away.short}`;
   const text = `${comment.minute} ${comment.text}`;
   const url = getCommentUrl(matchId, comment.id);
 
@@ -314,7 +314,7 @@ function renderComments(match) {
   return `
     <section class="feed">
       <div class="feed-header">
-        <h2>O Bilhas ao minuto</h2>
+        <h2>bilhas ao minuto</h2>
         <span class="pill">${match.comments.length} comentarios</span>
       </div>
       <div class="comment-list">

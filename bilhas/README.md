@@ -37,7 +37,7 @@ Existe agora uma primeira app Next.js na raiz do projeto.
 Para correr localmente:
 
 ```bash
-cd "/Users/lucagil/Documents/ZIBS/O Bilhas"
+cd "/Users/lucagil/Documents/ZIBS/bilhas"
 pnpm install
 pnpm dev
 ```
@@ -95,7 +95,7 @@ Existe um primeiro prototipo estatico em `prototype/`.
 Para correr localmente:
 
 ```bash
-cd "/Users/lucagil/Documents/ZIBS/O Bilhas/prototype"
+cd "/Users/lucagil/Documents/ZIBS/bilhas/prototype"
 python3 -m http.server 8080
 ```
 

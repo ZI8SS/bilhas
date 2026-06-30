@@ -59,10 +59,10 @@ DATABASE_URL="postgres://..." DATABASE_SSL=true pnpm db:seed
 
 ## Vercel Settings
 
-Se o repo GitHub tiver a pasta `O Bilhas` dentro de `ZIBS`, configurar:
+Se o repo GitHub tiver a pasta `bilhas` dentro de `ZIBS`, configurar:
 
 ```text
-Root Directory: O Bilhas
+Root Directory: bilhas
 Framework Preset: Next.js
 Install Command: pnpm install
 Build Command: pnpm build
