@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pt">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="O Bilhas, live score portugues com comentario humoristico ao vivo."
+    />
+    <title>O Bilhas</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#home" aria-label="O Bilhas">
+          <span class="brand-mark">B</span>
+          <span>
+            <strong>Bilhas</strong>
+            <small>o comentario que faltava</small>
+          </span>
+        </a>
+        <nav class="topnav" aria-label="Navegacao principal">
+          <a href="#home">Jogos</a>
+          <a href="#ranking">Frases</a>
+          <a href="#admin">Redacao</a>
+        </nav>
+      </header>
+
+      <main id="app" class="main" tabindex="-1"></main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
+  </body>
+</html>

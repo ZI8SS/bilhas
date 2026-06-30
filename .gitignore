@@ -1,0 +1,20 @@
+.DS_Store
+
+# Dependencies
+node_modules
+
+# Next.js
+.next
+out
+
+# Env/secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# Build output
+dist
+coverage
