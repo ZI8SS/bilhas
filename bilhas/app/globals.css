@@ -622,71 +622,27 @@ button {
 }
 
 .share-cluster {
-  position: relative;
   display: flex;
   align-self: start;
-  gap: 6px;
   justify-content: flex-end;
-  min-width: 178px;
-}
-
-.share-button,
-.copy-button,
-.share-menu a,
-.share-menu button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 36px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: #fff;
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.share-button,
-.copy-button {
-  gap: 7px;
-  padding: 8px 10px;
+  min-width: 132px;
 }
 
 .share-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 132px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
   background: var(--ink);
   border-color: var(--ink);
   color: #fff;
-}
-
-.copy-button {
-  color: var(--muted);
-}
-
-.share-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  z-index: 6;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(98px, 1fr));
-  gap: 7px;
-  width: 230px;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: var(--shadow);
-}
-
-.share-menu a,
-.share-menu button {
-  width: 100%;
-  padding: 8px 10px;
-  text-align: center;
-}
-
-.share-menu button {
-  cursor: pointer;
+  font-size: 13px;
+  font-weight: 850;
 }
 
 .form-grid label {
@@ -787,11 +743,6 @@ button {
     grid-column: 2;
     justify-content: flex-end;
     min-width: 0;
-  }
-
-  .share-menu {
-    right: 0;
-    width: min(230px, calc(100vw - 86px));
   }
 }
 
