@@ -3,19 +3,19 @@ type MediaKind = "goal" | "referee" | "stadium" | "var";
 const mediaByKind: Record<MediaKind, { alt: string; src: string }> = {
   goal: {
     alt: "Jogadores a festejar um golo",
-    src: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=crop&w=900&q=80",
+    src: "/media/goal.png",
   },
   referee: {
     alt: "Arbitro em campo",
-    src: "https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=900&q=80",
+    src: "/media/referee.png",
   },
   stadium: {
     alt: "Estadio de futebol",
-    src: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=900&q=80",
+    src: "/media/stadium.png",
   },
   var: {
     alt: "Ecra de decisao no futebol",
-    src: "https://images.unsplash.com/photo-1518604666860-9ed391f76460?auto=format&fit=crop&w=900&q=80",
+    src: "/media/var.png",
   },
 };
 
