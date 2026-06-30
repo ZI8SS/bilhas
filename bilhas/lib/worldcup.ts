@@ -212,6 +212,21 @@ function status(game: WorldCupGame, now = new Date()) {
   return "Hoje";
 }
 
+function liveMinute(game: WorldCupGame) {
+  if (!game.time_elapsed || game.time_elapsed === "notstarted") return null;
+  if (/^\d+$/.test(game.time_elapsed)) return `${game.time_elapsed}'`;
+  if (game.time_elapsed === "finished") return "Fim";
+
+  return "Ao vivo";
+}
+
+function minuteFor(game: WorldCupGame, currentStatus: string, startsAt: Date | null) {
+  if (currentStatus === "Terminado") return "Fim";
+  if (currentStatus === "Ao vivo") return liveMinute(game) ?? "Ao vivo";
+
+  return displayKickoff(startsAt);
+}
+
 function competition(game: WorldCupGame) {
   return stageNames[game.type ?? ""] ?? "Mundial 2026";
 }
@@ -308,7 +323,7 @@ function mapGame(game: WorldCupGame): Match {
   return {
     id: publicId(game),
     competition: competition(game),
-    minute: currentStatus === "Hoje" || currentStatus === "Agendado" ? displayKickoff(startsAt) : "Fim",
+    minute: minuteFor(game, currentStatus, startsAt),
     status: currentStatus,
     startsAt: startsAt?.toISOString() ?? null,
     home: {
