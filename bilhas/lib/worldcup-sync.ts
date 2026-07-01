@@ -178,11 +178,21 @@ async function upsertGame(game: WorldCupGame) {
   }
 
   if (match.events.length > 0) {
+    const automaticCommentIds = match.comments.map((comment) => comment.id);
+
     await sql`
       UPDATE bilhas_comments
       SET published_at = NULL, updated_at = now()
       WHERE match_id = ${matchId}
         AND public_id = ${`wc-${game.id}-pre`}
+    `;
+
+    await sql`
+      UPDATE bilhas_comments
+      SET published_at = NULL, updated_at = now()
+      WHERE match_id = ${matchId}
+        AND public_id LIKE ${`wc-${game.id}-%`}
+        AND public_id <> ALL(${automaticCommentIds})
     `;
   }
 

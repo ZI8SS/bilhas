@@ -424,6 +424,75 @@ function previewComment(game: WorldCupGame): BilhasComment {
   };
 }
 
+function eventMinuteNumber(event: MatchEvent) {
+  const match = event.minute.match(/^(\d+)/);
+  return match ? Number(match[1]) : null;
+}
+
+function elapsedMinute(game: WorldCupGame, currentStatus: string, startsAt: Date | null, now = new Date()) {
+  if (currentStatus === "Terminado") return 90;
+  if (currentStatus !== "Ao vivo") return 0;
+  if (game.time_elapsed && /^\d+$/.test(game.time_elapsed)) return Number(game.time_elapsed);
+  if (!startsAt) return 0;
+
+  return Math.max(0, Math.min(90, Math.floor((now.getTime() - startsAt.getTime()) / 60000)));
+}
+
+function clockComment(game: WorldCupGame, minute: number, index: number): BilhasComment {
+  const home = teamName(game.home_team_name_en);
+  const away = teamName(game.away_team_name_en);
+  const seed = `${game.id}-${minute}-${home}-${away}`;
+  const lines = [
+    `${minute}' no ${home}-${away}. O jogo esta naquela fase em que toda a gente parece ter uma ideia, mas ninguem quer ficar com a ata.`,
+    `${minute}' e a bola circula com a conviccao de um processo europeu: devagar, formal e sempre a prometer consequencias.`,
+    `${minute}' no relogio. Ha mais estudo aqui do que numa comissao parlamentar, mas para ja menos conclusoes.`,
+    `${minute}' de jogo. O ${home} tenta mandar, o ${away} tenta responder, e a paciencia do espectador vai fazendo cardio.`,
+    `${minute}'. Isto esta equilibrado como orcamento familiar depois de ver a renda, portanto convem ninguem respirar demasiado forte.`,
+    `${minute}' e o jogo entrou em modo novela das nove: toda a gente olha muito, alguem vai acabar a chorar, mas ainda nao sabemos quem.`,
+    `${minute}'. A pressao sobe aos bocadinhos, como preco de cafe em zona turistica: ninguem gosta, todos aceitam.`,
+    `${minute}' no ${home}-${away}. Ha espaco entre linhas suficiente para uma discussao sobre o novo aeroporto e ainda sobra para estacionamento.`,
+    `${minute}'. O jogo esta vivo, mas por enquanto naquele vivo de sala de espera: respira, mexe-se, mas ninguem chama pelo nome.`,
+    `${minute}' e as duas equipas negociam territorio como ministros em Bruxelas: muitos gestos, frases longas e um acordo que fica para depois.`,
+    `${minute}'. Se isto fosse cinema, estavamos na parte em que a realizacao mostra uma janela com chuva para dizer que algo pode acontecer.`,
+    `${minute}' no relogio. O publico ja percebeu que isto pode dar drama ou uma sesta com estatisticas, que tambem e uma tradicao respeitavel.`,
+    `${minute}'. O ${away} esta a defender como quem responde "vamos ver" a todos os problemas da vida.`,
+    `${minute}'. O ${home} tem bola, tem intencao e tem aquele risco de transformar posse em PowerPoint sem botao de play.`,
+    `${minute}' e ainda ha tempo para tudo: golo, falhanco, VAR, ou uma opiniao muito convicta de alguem que chegou agora ao sofa.`,
+    `${minute}'. O ritmo esta tao tactico que ate a RTP2 chamaria isto de conteudo exigente.`,
+    `${minute}' no ${home}-${away}. A coisa nao esta parada; esta so a pensar demasiado sobre si propria.`,
+    `${minute}'. Ha ali uma ala tao aberta que uma revista social ja estaria a perguntar se ha crise na relacao.`,
+  ];
+
+  return {
+    featured: index === 0,
+    id: `wc-${game.id}-tick-${minute}`,
+    intensity: minute % 15 === 0 ? "medio" : "leve",
+    minute: `${minute}'`,
+    text: pickLine(lines, seed, index),
+  };
+}
+
+function clockComments(game: WorldCupGame, events: MatchEvent[], currentStatus: string, startsAt: Date | null) {
+  const elapsed = elapsedMinute(game, currentStatus, startsAt);
+  if (elapsed < 5) return [];
+
+  const eventMinutes = new Set(events.map(eventMinuteNumber).filter((minute): minute is number => minute !== null));
+  const comments: BilhasComment[] = [];
+
+  for (let minute = 5; minute <= elapsed; minute += 5) {
+    if ([minute - 1, minute, minute + 1].some((value) => eventMinutes.has(value))) continue;
+    comments.push(clockComment(game, minute, comments.length));
+  }
+
+  return comments;
+}
+
+function commentMinuteOrder(comment: BilhasComment) {
+  if (comment.minute === "Pre") return -1;
+  const match = comment.minute.match(/^(\d+)/);
+  return match ? Number(match[1]) : 999;
+}
+
 function isRelevant(game: WorldCupGame, now: Date) {
   const date = kickoffDate(game);
   if (!date) return false;
@@ -442,13 +511,16 @@ function isRelevant(game: WorldCupGame, now: Date) {
 function mapGame(game: WorldCupGame): Match {
   const events = eventsFor(game);
   const hasNamedTeams = Boolean(game.home_team_name_en && game.away_team_name_en);
-  const comments = hasNamedTeams
-    ? events.length > 0
-      ? events.map((event, index) => commentForEvent(game, event, index))
-      : [previewComment(game)]
-    : [];
   const currentStatus = status(game);
   const startsAt = kickoffDate(game);
+  const tickerComments = clockComments(game, events, currentStatus, startsAt);
+  const comments = hasNamedTeams
+    ? events.length > 0
+      ? [...tickerComments, ...events.map((event, index) => commentForEvent(game, event, index))].sort(
+          (left, right) => commentMinuteOrder(left) - commentMinuteOrder(right),
+        )
+      : [previewComment(game)]
+    : [];
 
   return {
     id: publicId(game),
