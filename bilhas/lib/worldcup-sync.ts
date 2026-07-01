@@ -180,6 +180,15 @@ async function upsertGame(game: WorldCupGame) {
     `;
   }
 
+  if (match.comments.length === 0) {
+    await sql`
+      UPDATE bilhas_comments
+      SET published_at = NULL, updated_at = now()
+      WHERE match_id = ${matchId}
+        AND public_id LIKE ${`wc-${game.id}-%`}
+    `;
+  }
+
   return { comments, events, matches: 1, teams: 2 };
 }
 

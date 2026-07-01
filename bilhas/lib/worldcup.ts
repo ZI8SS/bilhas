@@ -363,7 +363,12 @@ function isRelevant(game: WorldCupGame, now: Date) {
 
 function mapGame(game: WorldCupGame): Match {
   const events = eventsFor(game);
-  const comments = events.length > 0 ? events.map((event, index) => commentForEvent(game, event, index)) : [previewComment(game)];
+  const hasNamedTeams = Boolean(game.home_team_name_en && game.away_team_name_en);
+  const comments = hasNamedTeams
+    ? events.length > 0
+      ? events.map((event, index) => commentForEvent(game, event, index))
+      : [previewComment(game)]
+    : [];
   const currentStatus = status(game);
   const startsAt = kickoffDate(game);
 
