@@ -43,10 +43,9 @@ function readableStatus(row: MatchRow) {
   if (row.status === "scheduled" && row.starts_at) {
     const startsAt = new Date(row.starts_at);
     const now = new Date();
-    const hasScore = row.home_score !== null || row.away_score !== null;
 
     if (now.getTime() >= startsAt.getTime()) {
-      return hasScore ? "A decorrer" : "Por atualizar";
+      return "Por atualizar";
     }
 
     return isToday(row.starts_at) ? "Hoje" : "Agendado";

@@ -8,6 +8,7 @@ export function hasStarted(match: Match) {
 export function scoreIsPublic(match: Match) {
   if (match.status === "Agendado") return false;
   if (match.status === "Hoje" && !hasStarted(match)) return false;
+  if (match.status === "Por atualizar") return false;
   if (match.home.score === null && match.away.score === null) return false;
 
   return true;
