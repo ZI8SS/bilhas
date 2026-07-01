@@ -171,6 +171,15 @@ async function upsertGame(game: WorldCupGame) {
     comments += rows.length;
   }
 
+  if (match.events.length > 0) {
+    await sql`
+      UPDATE bilhas_comments
+      SET published_at = NULL, updated_at = now()
+      WHERE match_id = ${matchId}
+        AND public_id = ${`wc-${game.id}-pre`}
+    `;
+  }
+
   return { comments, events, matches: 1, teams: 2 };
 }
 

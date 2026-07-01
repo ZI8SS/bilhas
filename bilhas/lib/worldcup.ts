@@ -274,31 +274,48 @@ function commentForEvent(game: WorldCupGame, event: MatchEvent, index: number): 
   const away = teamName(game.away_team_name_en);
   const player = event.player ?? "Alguem";
   const seed = `${game.id}-${event.minute}-${player}-${home}-${away}`;
-  const templates = [
-    `${player} marca e transforma o plano defensivo num PowerPoint sem fontes: abre, mas ninguem percebe o que era suposto acontecer.`,
-    `Golo de ${player}. A defesa ficou a ver como quem espera que o VAR resolva problemas que em casa seriam tratados com uma conversa seria.`,
-    `${player} apareceu na area com a pontualidade que muita obra publica promete e raramente entrega. Desta vez, a bola assinou a rececao.`,
-    `Golo no ${home}-${away}. A organizacao defensiva teve menos cobertura do que rede movel num parque subterraneo.`,
-    `${player} finaliza e deixa o adversario com aquele silencio de grupo de WhatsApp depois de alguem mandar uma opiniao politica as 8 da manha.`,
-    `A bola entrou e o jogo ganhou ritmo de terceiro ato: se isto fosse cinema, ja estava alguem a correr para o aeroporto sem bagagem.`,
-    `${player} marcou com a frieza de quem ve Sozinho em Casa no Natal e ainda se surpreende com as armadilhas.`,
-    `Golo de ${player}. Houve ali uma defesa tao passiva que ate o debate quinzenal parecia desporto radical.`,
-    `${home}-${away} muda de cara. A defesa prometeu estabilidade e entregou uma coligacao de marcacoes sem maioria absoluta.`,
-    `${player} encostou para dentro e por momentos o relvado pareceu uma tasca em hora de almoco: toda a gente fala, poucos servem.`,
-    `Golo. O lance nasceu simples, cresceu confuso e acabou dentro da baliza, como um email com demasiada gente em cc.`,
-    `${player} aproveitou a oferta. Nao foi uma prenda, foi cabaz completo, daqueles que aparecem quando alguem quer pedir desculpa sem dizer nada.`,
-    `A defesa tentou fechar a porta, mas deixou a corrente, a chave e uma nota a dizer "volto ja". ${player} agradeceu.`,
-    `Golo de ${player}. O guarda-redes ficou tao sozinho que dava para meter uma legenda: "baseado em factos infelizmente reais".`,
-    `${player} marcou e a bancada percebeu tudo antes da defesa. Mau sinal quando 40 mil pessoas fazem scouting melhor em tempo real.`,
-    `A jogada teve timing, crueldade e zero compaixao administrativa. Se fosse no Parlamento, pedia-se intervalo regimental.`,
+  const openers = [
+    `${player} marca no ${home}-${away}.`,
+    `Golo de ${player}.`,
+    `${player} apareceu na zona proibida e nao pediu licenca.`,
+    `A bola entrou, ${player} sorriu e o plano A ficou sem advogado.`,
+    `${player} finaliza e muda a temperatura do jogo.`,
+    `O ${home}-${away} acaba de ganhar novo argumento: golo de ${player}.`,
+    `${player} fez o que todos prometem na flash interview: foi eficaz.`,
+    `Golo. ${player} tratou a area como se tivesse reserva marcada.`,
+    `${player} encostou a bola para dentro e deixou o jogo menos diplomatico.`,
+    `A jogada acaba em golo de ${player}, porque alguem tinha de dar um fim ao episodio.`,
+    `${player} marcou e interrompeu a reuniao taticamente motivacional do adversario.`,
+    `Golo de ${player}, daqueles que entram primeiro na baliza e depois na cabeca da defesa.`,
   ];
+  const closers = [
+    `A defesa ficou com ar de quem abriu o Excel errado em plena apresentacao.`,
+    `Foi uma decisao tao limpa que ate num debate televisivo parecia consenso.`,
+    `Se isto fosse cinema, era o momento em que a banda sonora entra e alguem percebe que devia ter corrido mais cedo.`,
+    `O adversario ficou a olhar para a bola como quem ve a renda de Lisboa em 2026: sem resposta e com alguma indignacao.`,
+    `A marcacao desapareceu com a subtileza de uma promessa eleitoral depois das urnas fecharem.`,
+    `Houve ali mais espaco do que numa explanada em janeiro, e ${player} aproveitou sem pedir manta.`,
+    `A defesa tentou ser adulta, mas acabou a entregar um episodio piloto de panico organizado.`,
+    `Nao foi magia; foi so futebol a lembrar que a concentracao tambem paga imposto.`,
+    `A bola entrou com tanta naturalidade que quase parecia ter cartao de socio.`,
+    `O lance teve ritmo de thriller barato: vimos o final a chegar e mesmo assim ninguem travou.`,
+    `No VAR emocional, isto dava vermelho direto a metade das decisoes tomadas antes do remate.`,
+    `Foi menos jogada estudada e mais "quem deixou isto acontecer?" com relvado.`,
+    `A equipa que sofreu ficou com cara de quem acabou de perceber a clausula pequena do contrato.`,
+    `A baliza abriu-se como loja em saldos: muita gente entrou tarde e ninguem controlou a porta.`,
+    `O lance teve aquele dramatismo de aeroporto quando o voo muda de porta e toda a gente finge calma.`,
+    `Se havia plano defensivo, ficou guardado numa pasta chamada "versao_final_agora_sim_2".`,
+    `A bancada percebeu antes do defesa, e isso raramente e bom sinal para o defesa.`,
+    `Foi servido com a frieza de uma conta no restaurante quando ninguem pediu entradas.`,
+  ];
+  const text = `${pickLine(openers, seed, index)} ${pickLine(closers, seed, index + 2)}`;
 
   return {
     id: `wc-${game.id}-${index}`,
     minute: event.minute,
     intensity: index % 3 === 0 ? "forte" : "medio",
     featured: index === 0,
-    text: pickLine(templates, seed, index),
+    text,
   };
 }
 
