@@ -164,7 +164,13 @@ export async function getMatches(): Promise<Match[]> {
             'kind', bilhas_comments.media_kind
           )), '{}'::jsonb)
         )
-        ORDER BY bilhas_comments.created_at
+        ORDER BY
+          CASE
+            WHEN bilhas_comments.minute = 'Pre' THEN -1
+            WHEN bilhas_comments.minute ~ '^[0-9]+' THEN substring(bilhas_comments.minute FROM '^[0-9]+')::int
+            ELSE 999
+          END,
+          bilhas_comments.created_at
       ) AS items
       FROM bilhas_comments
       WHERE bilhas_comments.match_id = matches.id

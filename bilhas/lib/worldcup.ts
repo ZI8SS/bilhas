@@ -443,32 +443,33 @@ function clockComment(game: WorldCupGame, minute: number, index: number): Bilhas
   const away = teamName(game.away_team_name_en);
   const seed = `${game.id}-${minute}-${home}-${away}`;
   const lines = [
-    `${minute}' no ${home}-${away}. O jogo esta naquela fase em que toda a gente parece ter uma ideia, mas ninguem quer ficar com a ata.`,
-    `${minute}' e a bola circula com a conviccao de um processo europeu: devagar, formal e sempre a prometer consequencias.`,
-    `${minute}' no relogio. Ha mais estudo aqui do que numa comissao parlamentar, mas para ja menos conclusoes.`,
-    `${minute}' de jogo. O ${home} tenta mandar, o ${away} tenta responder, e a paciencia do espectador vai fazendo cardio.`,
-    `${minute}'. Isto esta equilibrado como orcamento familiar depois de ver a renda, portanto convem ninguem respirar demasiado forte.`,
-    `${minute}' e o jogo entrou em modo novela das nove: toda a gente olha muito, alguem vai acabar a chorar, mas ainda nao sabemos quem.`,
-    `${minute}'. A pressao sobe aos bocadinhos, como preco de cafe em zona turistica: ninguem gosta, todos aceitam.`,
-    `${minute}' no ${home}-${away}. Ha espaco entre linhas suficiente para uma discussao sobre o novo aeroporto e ainda sobra para estacionamento.`,
-    `${minute}'. O jogo esta vivo, mas por enquanto naquele vivo de sala de espera: respira, mexe-se, mas ninguem chama pelo nome.`,
-    `${minute}' e as duas equipas negociam territorio como ministros em Bruxelas: muitos gestos, frases longas e um acordo que fica para depois.`,
-    `${minute}'. Se isto fosse cinema, estavamos na parte em que a realizacao mostra uma janela com chuva para dizer que algo pode acontecer.`,
-    `${minute}' no relogio. O publico ja percebeu que isto pode dar drama ou uma sesta com estatisticas, que tambem e uma tradicao respeitavel.`,
-    `${minute}'. O ${away} esta a defender como quem responde "vamos ver" a todos os problemas da vida.`,
-    `${minute}'. O ${home} tem bola, tem intencao e tem aquele risco de transformar posse em PowerPoint sem botao de play.`,
-    `${minute}' e ainda ha tempo para tudo: golo, falhanco, VAR, ou uma opiniao muito convicta de alguem que chegou agora ao sofa.`,
-    `${minute}'. O ritmo esta tao tactico que ate a RTP2 chamaria isto de conteudo exigente.`,
-    `${minute}' no ${home}-${away}. A coisa nao esta parada; esta so a pensar demasiado sobre si propria.`,
-    `${minute}'. Ha ali uma ala tao aberta que uma revista social ja estaria a perguntar se ha crise na relacao.`,
+    `O jogo esta naquela fase em que toda a gente parece ter uma ideia, mas ninguem quer ficar com a ata.`,
+    `A bola circula com a conviccao de um processo europeu: devagar, formal e sempre a prometer consequencias.`,
+    `Ha mais estudo aqui do que numa comissao parlamentar, mas para ja menos conclusoes.`,
+    `O ${home} tenta mandar, o ${away} tenta responder, e a paciencia do espectador vai fazendo cardio.`,
+    `Isto esta equilibrado como orcamento familiar depois de ver a renda, portanto convem ninguem respirar demasiado forte.`,
+    `O jogo entrou em modo novela das nove: toda a gente olha muito, alguem vai acabar a chorar, mas ainda nao sabemos quem.`,
+    `A pressao sobe aos bocadinhos, como preco de cafe em zona turistica: ninguem gosta, todos aceitam.`,
+    `Ha espaco entre linhas suficiente para uma discussao sobre o novo aeroporto e ainda sobra para estacionamento.`,
+    `O jogo esta vivo, mas por enquanto naquele vivo de sala de espera: respira, mexe-se, mas ninguem chama pelo nome.`,
+    `As duas equipas negociam territorio como ministros em Bruxelas: muitos gestos, frases longas e um acordo que fica para depois.`,
+    `Se isto fosse cinema, estavamos na parte em que a realizacao mostra uma janela com chuva para dizer que algo pode acontecer.`,
+    `O publico ja percebeu que isto pode dar drama ou uma sesta com estatisticas, que tambem e uma tradicao respeitavel.`,
+    `O ${away} esta a defender como quem responde "vamos ver" a todos os problemas da vida.`,
+    `O ${home} tem bola, tem intencao e tem aquele risco de transformar posse em PowerPoint sem botao de play.`,
+    `Ainda ha tempo para tudo: golo, falhanco, VAR, ou uma opiniao muito convicta de alguem que chegou agora ao sofa.`,
+    `O ritmo esta tao tactico que ate a RTP2 chamaria isto de conteudo exigente.`,
+    `A coisa nao esta parada; esta so a pensar demasiado sobre si propria.`,
+    `Ha ali uma ala tao aberta que uma revista social ja estaria a perguntar se ha crise na relacao.`,
   ];
+  const text = lines[(hashText(seed) + index) % lines.length];
 
   return {
     featured: index === 0,
     id: `wc-${game.id}-tick-${minute}`,
     intensity: minute % 15 === 0 ? "medio" : "leve",
     minute: `${minute}'`,
-    text: pickLine(lines, seed, index),
+    text,
   };
 }
 
