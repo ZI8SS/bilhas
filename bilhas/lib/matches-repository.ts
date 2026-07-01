@@ -184,6 +184,8 @@ export async function getMatch(id: string): Promise<Match | undefined> {
 
 export async function featuredComments() {
   const allMatches = await getMatches();
+  const seenMatches = new Set<string>();
+  const seenTexts = new Set<string>();
 
   return allMatches
     .flatMap((match) =>
@@ -191,5 +193,13 @@ export async function featuredComments() {
         .filter((comment) => comment.featured)
         .map((comment) => ({ match, comment })),
     )
+    .filter(({ match, comment }) => {
+      const textKey = comment.text.toLowerCase().replace(/\s+/g, " ").slice(0, 80);
+      if (seenMatches.has(match.id) || seenTexts.has(textKey)) return false;
+
+      seenMatches.add(match.id);
+      seenTexts.add(textKey);
+      return true;
+    })
     .slice(0, 8);
 }

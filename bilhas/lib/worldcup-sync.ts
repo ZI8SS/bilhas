@@ -158,18 +158,15 @@ async function upsertGame(game: WorldCupGame) {
         ${comment.featured},
         now()
       )
-      ON CONFLICT (public_id) DO NOTHING
+      ON CONFLICT (public_id) DO UPDATE SET
+        minute = EXCLUDED.minute,
+        intensity = EXCLUDED.intensity,
+        body = EXCLUDED.body,
+        featured = EXCLUDED.featured,
+        published_at = COALESCE(bilhas_comments.published_at, now()),
+        updated_at = now()
       RETURNING id
     `;
-
-    if (rows.length === 0 && comment.id.endsWith("-pre")) {
-      await sql`
-        UPDATE bilhas_comments
-        SET body = ${comment.text}, updated_at = now()
-        WHERE public_id = ${comment.id}
-          AND body LIKE '%Nesta fase do Mundial, qualquer jogo pode ser historico%'
-      `;
-    }
 
     comments += rows.length;
   }

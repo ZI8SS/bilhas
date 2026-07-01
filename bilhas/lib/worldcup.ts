@@ -261,13 +261,36 @@ function eventsFor(game: WorldCupGame): MatchEvent[] {
   return events.sort((a, b) => Number.parseInt(a.minute, 10) - Number.parseInt(b.minute, 10));
 }
 
+function hashText(value: string) {
+  return [...value].reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) % 9973, 7);
+}
+
+function pickLine(lines: string[], seed: string, offset = 0) {
+  return lines[(hashText(seed) + offset * 7) % lines.length];
+}
+
 function commentForEvent(game: WorldCupGame, event: MatchEvent, index: number): BilhasComment {
   const home = teamName(game.home_team_name_en);
   const away = teamName(game.away_team_name_en);
+  const player = event.player ?? "Alguem";
+  const seed = `${game.id}-${event.minute}-${player}-${home}-${away}`;
   const templates = [
-    `${event.player ?? "Alguem"} marca e o jogo ${home}-${away} ganha aquele ar de jantar de familia depois da primeira boca: agora ninguem sabe bem onde pousar os olhos.`,
-    `Golo de ${event.player ?? "um protagonista improvavel"}. A defesa ficou a acompanhar como quem ve a encomenda passar de carrinha e aceita o destino.`,
-    `${event.player ?? "O marcador"} apareceu na area com mais pontualidade do que muita reuniao marcada no calendario. A bola entrou e a vergonha pediu baixa.`,
+    `${player} marca e transforma o plano defensivo num PowerPoint sem fontes: abre, mas ninguem percebe o que era suposto acontecer.`,
+    `Golo de ${player}. A defesa ficou a ver como quem espera que o VAR resolva problemas que em casa seriam tratados com uma conversa seria.`,
+    `${player} apareceu na area com a pontualidade que muita obra publica promete e raramente entrega. Desta vez, a bola assinou a rececao.`,
+    `Golo no ${home}-${away}. A organizacao defensiva teve menos cobertura do que rede movel num parque subterraneo.`,
+    `${player} finaliza e deixa o adversario com aquele silencio de grupo de WhatsApp depois de alguem mandar uma opiniao politica as 8 da manha.`,
+    `A bola entrou e o jogo ganhou ritmo de terceiro ato: se isto fosse cinema, ja estava alguem a correr para o aeroporto sem bagagem.`,
+    `${player} marcou com a frieza de quem ve Sozinho em Casa no Natal e ainda se surpreende com as armadilhas.`,
+    `Golo de ${player}. Houve ali uma defesa tao passiva que ate o debate quinzenal parecia desporto radical.`,
+    `${home}-${away} muda de cara. A defesa prometeu estabilidade e entregou uma coligacao de marcacoes sem maioria absoluta.`,
+    `${player} encostou para dentro e por momentos o relvado pareceu uma tasca em hora de almoco: toda a gente fala, poucos servem.`,
+    `Golo. O lance nasceu simples, cresceu confuso e acabou dentro da baliza, como um email com demasiada gente em cc.`,
+    `${player} aproveitou a oferta. Nao foi uma prenda, foi cabaz completo, daqueles que aparecem quando alguem quer pedir desculpa sem dizer nada.`,
+    `A defesa tentou fechar a porta, mas deixou a corrente, a chave e uma nota a dizer "volto ja". ${player} agradeceu.`,
+    `Golo de ${player}. O guarda-redes ficou tao sozinho que dava para meter uma legenda: "baseado em factos infelizmente reais".`,
+    `${player} marcou e a bancada percebeu tudo antes da defesa. Mau sinal quando 40 mil pessoas fazem scouting melhor em tempo real.`,
+    `A jogada teve timing, crueldade e zero compaixao administrativa. Se fosse no Parlamento, pedia-se intervalo regimental.`,
   ];
 
   return {
@@ -275,7 +298,7 @@ function commentForEvent(game: WorldCupGame, event: MatchEvent, index: number): 
     minute: event.minute,
     intensity: index % 3 === 0 ? "forte" : "medio",
     featured: index === 0,
-    text: templates[index % templates.length],
+    text: pickLine(templates, seed, index),
   };
 }
 
@@ -283,19 +306,26 @@ function previewComment(game: WorldCupGame): BilhasComment {
   const home = teamName(game.home_team_name_en);
   const away = teamName(game.away_team_name_en);
   const templates = [
-    `${home}-${away} a caminho. Jogo de mata-mata, que e a forma elegante de dizer que hoje ate um lateral pode virar personagem principal.`,
-    `Daqui a pouco ha ${home}-${away}. Os nervos ja estao no aquecimento e ainda nem pediram autorizacao ao quarto arbitro.`,
-    `${home} contra ${away}. No papel e futebol; na pratica pode ser terapia de grupo com relvado e descontos de tempo.`,
-    `Pre-jogo de ${home}-${away}. Toda a gente tem plano ate a primeira bola bater num joelho e mudar a historia.`,
+    `${home}-${away} a caminho. No papel e um jogo; na pratica e uma auditoria publica a onze pessoas de cada lado.`,
+    `Daqui a pouco ha ${home}-${away}. Os nervos ja entraram em campo, os jogadores ainda estao a fingir que controlam a situacao.`,
+    `${home} contra ${away}. Uma daquelas noites em que o futebol promete xadrez e ao minuto 12 ja estamos todos a ver matraquilhos com imprensa.`,
+    `Pre-jogo de ${home}-${away}. Ha planos, ha discurso, ha quadro tatico. Depois a bola bate num joelho e vira cinema independente.`,
+    `${home}-${away} vem ai. Cheira a jogo onde alguem vai dizer "era evitar erros" e depois oferecer um erro em formato familiar.`,
+    `Tudo pronto para ${home}-${away}. Se isto fosse restaurante, a carta prometia fine dining; veremos se a cozinha nao serve pregos frios.`,
+    `${home}-${away}. O tipo de jogo em que toda a gente parece confiante ate a primeira perda de bola com narracao interior.`,
+    `A caminho de ${home}-${away}. Ha equipas que entram com estrategia; outras entram com fe. Hoje vamos descobrir quem trouxe PowerPoint e quem trouxe vela.`,
+    `${home}-${away} em modo quase a comecar. A bola ainda nem rolou e ja ha gente a preparar opinioes definitivas para usar no intervalo.`,
+    `Pre-jogo. ${home} e ${away} prometeram intensidade, palavra bonita que no futebol tanto quer dizer pressao alta como duas faltas e um olhar feio.`,
+    `${home}-${away} esta a chegar. Pode ser drama, pode ser sono, pode ser aquele filme que so fica bom quando ja estavamos a desistir.`,
+    `Daqui a pouco ha futebol. ${home}-${away}, ou como se diz tecnicamente: 90 minutos para transformar certezas em memes.`,
   ];
-  const index = Number.parseInt(game.id, 10) % templates.length;
 
   return {
     id: `wc-${game.id}-pre`,
     minute: "Pre",
     intensity: "leve",
     featured: true,
-    text: templates[index],
+    text: pickLine(templates, `${game.id}-${home}-${away}`),
   };
 }
 
