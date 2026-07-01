@@ -9,6 +9,7 @@ export type WorldCupGame = {
   home_scorers?: string | null;
   away_scorers?: string | null;
   local_date?: string;
+  stadium_id?: string;
   finished?: string;
   time_elapsed?: string;
   type?: string;
@@ -111,6 +112,25 @@ const portugalKickoffOverrides: Record<string, string> = {
   "79": "2026-07-01T01:00:00.000Z",
 };
 
+const stadiumTimeZones: Record<string, string> = {
+  "1": "America/Mexico_City",
+  "2": "America/Mexico_City",
+  "3": "America/Monterrey",
+  "4": "America/Chicago",
+  "5": "America/Chicago",
+  "6": "America/Chicago",
+  "7": "America/New_York",
+  "8": "America/New_York",
+  "9": "America/New_York",
+  "10": "America/New_York",
+  "11": "America/New_York",
+  "12": "America/Toronto",
+  "13": "America/Vancouver",
+  "14": "America/Los_Angeles",
+  "15": "America/Los_Angeles",
+  "16": "America/Los_Angeles",
+};
+
 function teamName(name?: string) {
   if (!name) return "A definir";
   return teamNames[name] ?? name;
@@ -159,19 +179,65 @@ export function parseWorldCupDate(game: WorldCupGame) {
   return kickoffDate(game);
 }
 
-function parseDate(value?: string) {
+function parseLocalDateParts(value?: string) {
   if (!value) return null;
   const match = value.match(/^(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})$/);
   if (!match) return null;
   const [, month, day, year, hour, minute] = match;
-  return new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute)));
+
+  return {
+    day: Number(day),
+    hour: Number(hour),
+    minute: Number(minute),
+    month: Number(month),
+    year: Number(year),
+  };
+}
+
+function partsInTimeZone(date: Date, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+    minute: "2-digit",
+    month: "2-digit",
+    timeZone,
+    year: "numeric",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return {
+    day: Number(values.day),
+    hour: Number(values.hour),
+    minute: Number(values.minute),
+    month: Number(values.month),
+    year: Number(values.year),
+  };
+}
+
+function zonedDateToUtc(value: string | undefined, timeZone: string) {
+  const desired = parseLocalDateParts(value);
+  if (!desired) return null;
+
+  const utcGuess = Date.UTC(desired.year, desired.month - 1, desired.day, desired.hour, desired.minute);
+  const actual = partsInTimeZone(new Date(utcGuess), timeZone);
+  const desiredAsUtc = Date.UTC(desired.year, desired.month - 1, desired.day, desired.hour, desired.minute);
+  const actualAsUtc = Date.UTC(actual.year, actual.month - 1, actual.day, actual.hour, actual.minute);
+
+  return new Date(utcGuess + (desiredAsUtc - actualAsUtc));
 }
 
 function kickoffDate(game: WorldCupGame) {
   const override = portugalKickoffOverrides[game.id];
   if (override) return new Date(override);
 
-  return parseDate(game.local_date);
+  const timeZone = stadiumTimeZones[game.stadium_id ?? ""];
+  if (timeZone) return zonedDateToUtc(game.local_date, timeZone);
+
+  const date = parseLocalDateParts(game.local_date);
+  if (!date) return null;
+
+  return new Date(Date.UTC(date.year, date.month - 1, date.day, date.hour, date.minute));
 }
 
 function portugalParts(date: Date) {
