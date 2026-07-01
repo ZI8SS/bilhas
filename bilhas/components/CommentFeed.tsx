@@ -1,6 +1,6 @@
 import { scoreText } from "@/lib/data";
 import type { Match } from "@/lib/types";
-import { MatchMedia, mediaKindFromText } from "./MatchMedia";
+import { MatchMedia } from "./MatchMedia";
 import { ShareButtons } from "./ShareButtons";
 
 export function CommentFeed({ match }: { match: Match }) {
@@ -15,7 +15,7 @@ export function CommentFeed({ match }: { match: Match }) {
           <article className={`comment ${comment.featured ? "featured" : ""}`} id={comment.id} key={comment.id}>
             <span className="comment-minute">{comment.minute}</span>
             <div className="comment-body">
-              {comment.featured ? <MatchMedia kind={mediaKindFromText(comment.text)} /> : null}
+              <MatchMedia media={comment.media} />
               <p>{comment.text}</p>
               <small>
                 {comment.intensity}

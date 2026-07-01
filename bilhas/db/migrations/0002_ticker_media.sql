@@ -1,0 +1,13 @@
+ALTER TABLE bilhas_comments
+  ADD COLUMN IF NOT EXISTS media_url TEXT,
+  ADD COLUMN IF NOT EXISTS media_credit TEXT,
+  ADD COLUMN IF NOT EXISTS media_source_url TEXT,
+  ADD COLUMN IF NOT EXISTS media_license TEXT,
+  ADD COLUMN IF NOT EXISTS media_kind TEXT;
+
+ALTER TABLE match_events
+  ADD COLUMN IF NOT EXISTS media_url TEXT,
+  ADD COLUMN IF NOT EXISTS media_credit TEXT,
+  ADD COLUMN IF NOT EXISTS media_source_url TEXT,
+  ADD COLUMN IF NOT EXISTS media_license TEXT,
+  ADD COLUMN IF NOT EXISTS media_kind TEXT;

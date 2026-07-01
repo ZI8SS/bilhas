@@ -132,7 +132,14 @@ export async function getMatches(): Promise<Match[]> {
           'minute', match_events.minute,
           'type', match_events.event_type::text,
           'player', players.display_name,
-          'text', match_events.description
+          'text', match_events.description,
+          'media', NULLIF(jsonb_strip_nulls(jsonb_build_object(
+            'url', match_events.media_url,
+            'credit', match_events.media_credit,
+            'sourceUrl', match_events.media_source_url,
+            'license', match_events.media_license,
+            'kind', match_events.media_kind
+          )), '{}'::jsonb)
         )
         ORDER BY match_events.created_at
       ) AS items
@@ -147,7 +154,14 @@ export async function getMatches(): Promise<Match[]> {
           'minute', bilhas_comments.minute,
           'intensity', bilhas_comments.intensity::text,
           'featured', bilhas_comments.featured,
-          'text', bilhas_comments.body
+          'text', bilhas_comments.body,
+          'media', NULLIF(jsonb_strip_nulls(jsonb_build_object(
+            'url', bilhas_comments.media_url,
+            'credit', bilhas_comments.media_credit,
+            'sourceUrl', bilhas_comments.media_source_url,
+            'license', bilhas_comments.media_license,
+            'kind', bilhas_comments.media_kind
+          )), '{}'::jsonb)
         )
         ORDER BY bilhas_comments.created_at
       ) AS items

@@ -1,41 +1,30 @@
-type MediaKind = "goal" | "referee" | "stadium" | "var";
+import type { TickerMedia } from "@/lib/types";
 
-const mediaByKind: Record<MediaKind, { alt: string; src: string }> = {
-  goal: {
-    alt: "Jogadores a festejar um golo",
-    src: "/media/goal.png",
-  },
-  referee: {
-    alt: "Arbitro em campo",
-    src: "/media/referee.png",
-  },
-  stadium: {
-    alt: "Estadio de futebol",
-    src: "/media/stadium.png",
-  },
-  var: {
-    alt: "Ecra de decisao no futebol",
-    src: "/media/var.png",
-  },
-};
+function mediaLabel(media: TickerMedia) {
+  if (media.credit && media.sourceUrl) return `Foto: ${media.credit}`;
+  if (media.credit) return `Foto: ${media.credit}`;
+  if (media.license) return media.license;
 
-export function mediaKindFromText(text: string): MediaKind {
-  const value = text.toLowerCase();
-
-  if (value.includes("var")) return "var";
-  if (value.includes("amarelo") || value.includes("vermelho") || value.includes("falta")) return "referee";
-  if (value.includes("golo") || value.includes("marca") || value.includes("bola entrou")) return "goal";
-
-  return "stadium";
+  return "Imagem editorial";
 }
 
-export function MatchMedia({ kind }: { kind: MediaKind }) {
-  const media = mediaByKind[kind];
+export function MatchMedia({ media }: { media?: TickerMedia | null }) {
+  if (!media?.url) return null;
+
+  const caption = mediaLabel(media);
 
   return (
     <figure className="match-media">
-      <img src={media.src} alt={media.alt} loading="lazy" />
-      <figcaption>Imagem editorial ilustrativa</figcaption>
+      <img src={media.url} alt={media.kind ?? "Imagem do jogo"} loading="lazy" />
+      <figcaption>
+        {media.sourceUrl ? (
+          <a href={media.sourceUrl} rel="noreferrer" target="_blank">
+            {caption}
+          </a>
+        ) : (
+          caption
+        )}
+      </figcaption>
     </figure>
   );
 }

@@ -1,5 +1,5 @@
 import type { Match } from "@/lib/types";
-import { MatchMedia, mediaKindFromText } from "./MatchMedia";
+import { MatchMedia } from "./MatchMedia";
 
 export function EventFeed({ match }: { match: Match }) {
   const events = match.events.length
@@ -17,7 +17,7 @@ export function EventFeed({ match }: { match: Match }) {
           <article className="event" key={`${event.minute}-${event.type}`}>
             <span className="event-minute">{event.minute}</span>
             <div className="event-body">
-              {event.type !== "Sem eventos" ? <MatchMedia kind={mediaKindFromText(`${event.type} ${event.text}`)} /> : null}
+              <MatchMedia media={event.media} />
               <p>
                 <strong>{event.type}</strong> · {event.text}
               </p>
