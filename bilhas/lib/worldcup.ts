@@ -237,7 +237,7 @@ function scorerItems(value?: string | null) {
   return [...value.matchAll(/"([^"]+)"/g)].map((item) => item[1]);
 }
 
-function scorerEvent(item: string, team: string): MatchEvent {
+function scorerEvent(item: string, team: string, opponent: string): MatchEvent {
   const minuteMatch = item.match(/(\d+(?:\+\d+)?)'/);
   const minute = minuteMatch ? `${minuteMatch[1]}'` : "Golo";
   const player = item.replace(/\s+\d+(?:\+\d+)?'.*$/, "").trim();
@@ -246,6 +246,8 @@ function scorerEvent(item: string, team: string): MatchEvent {
     minute,
     type: "Golo",
     player,
+    scoringTeam: team,
+    concedingTeam: opponent,
     text: `Golo de ${player} para ${team}.`,
   };
 }
@@ -254,8 +256,8 @@ function eventsFor(game: WorldCupGame): MatchEvent[] {
   const home = teamName(game.home_team_name_en);
   const away = teamName(game.away_team_name_en);
   const events = [
-    ...scorerItems(game.home_scorers).map((item) => scorerEvent(item, home)),
-    ...scorerItems(game.away_scorers).map((item) => scorerEvent(item, away)),
+    ...scorerItems(game.home_scorers).map((item) => scorerEvent(item, home, away)),
+    ...scorerItems(game.away_scorers).map((item) => scorerEvent(item, away, home)),
   ];
 
   return events.sort((a, b) => Number.parseInt(a.minute, 10) - Number.parseInt(b.minute, 10));
@@ -273,6 +275,8 @@ function commentForEvent(game: WorldCupGame, event: MatchEvent, index: number): 
   const home = teamName(game.home_team_name_en);
   const away = teamName(game.away_team_name_en);
   const player = event.player ?? "Alguem";
+  const concedingTeam = event.concedingTeam ?? (event.scoringTeam === home ? away : home);
+  const scoringTeam = event.scoringTeam ?? (concedingTeam === home ? away : home);
   const seed = `${game.id}-${event.minute}-${player}-${home}-${away}`;
   const openers = [
     `${player} marca no ${home}-${away}.`,
@@ -280,33 +284,41 @@ function commentForEvent(game: WorldCupGame, event: MatchEvent, index: number): 
     `${player} apareceu na zona proibida e nao pediu licenca.`,
     `A bola entrou, ${player} sorriu e o plano A ficou sem advogado.`,
     `${player} finaliza e muda a temperatura do jogo.`,
-    `O ${home}-${away} acaba de ganhar novo argumento: golo de ${player}.`,
+    `${scoringTeam} acaba de ganhar novo argumento: golo de ${player}.`,
     `${player} fez o que todos prometem na flash interview: foi eficaz.`,
     `Golo. ${player} tratou a area como se tivesse reserva marcada.`,
     `${player} encostou a bola para dentro e deixou o jogo menos diplomatico.`,
     `A jogada acaba em golo de ${player}, porque alguem tinha de dar um fim ao episodio.`,
-    `${player} marcou e interrompeu a reuniao taticamente motivacional do adversario.`,
+    `${player} marcou e interrompeu a reuniao taticamente motivacional do ${concedingTeam}.`,
     `Golo de ${player}, daqueles que entram primeiro na baliza e depois na cabeca da defesa.`,
   ];
   const closers = [
-    `A defesa ficou com ar de quem abriu o Excel errado em plena apresentacao.`,
+    `O ${concedingTeam} ficou com ar de quem abriu o Excel errado em plena apresentacao.`,
     `Foi uma decisao tao limpa que ate num debate televisivo parecia consenso.`,
     `Se isto fosse cinema, era o momento em que a banda sonora entra e alguem percebe que devia ter corrido mais cedo.`,
-    `O adversario ficou a olhar para a bola como quem ve a renda de Lisboa em 2026: sem resposta e com alguma indignacao.`,
+    `O ${concedingTeam} ficou a olhar para a bola como quem ve a renda de Lisboa em 2026: sem resposta e com alguma indignacao.`,
     `A marcacao desapareceu com a subtileza de uma promessa eleitoral depois das urnas fecharem.`,
     `Houve ali mais espaco do que numa explanada em janeiro, e ${player} aproveitou sem pedir manta.`,
-    `A defesa tentou ser adulta, mas acabou a entregar um episodio piloto de panico organizado.`,
+    `O ${concedingTeam} tentou ser adulto, mas acabou a entregar um episodio piloto de panico organizado.`,
     `Nao foi magia; foi so futebol a lembrar que a concentracao tambem paga imposto.`,
     `A bola entrou com tanta naturalidade que quase parecia ter cartao de socio.`,
     `O lance teve ritmo de thriller barato: vimos o final a chegar e mesmo assim ninguem travou.`,
     `No VAR emocional, isto dava vermelho direto a metade das decisoes tomadas antes do remate.`,
     `Foi menos jogada estudada e mais "quem deixou isto acontecer?" com relvado.`,
-    `A equipa que sofreu ficou com cara de quem acabou de perceber a clausula pequena do contrato.`,
+    `O ${concedingTeam} ficou com cara de quem acabou de perceber a clausula pequena do contrato.`,
     `A baliza abriu-se como loja em saldos: muita gente entrou tarde e ninguem controlou a porta.`,
     `O lance teve aquele dramatismo de aeroporto quando o voo muda de porta e toda a gente finge calma.`,
     `Se havia plano defensivo, ficou guardado numa pasta chamada "versao_final_agora_sim_2".`,
     `A bancada percebeu antes do defesa, e isso raramente e bom sinal para o defesa.`,
     `Foi servido com a frieza de uma conta no restaurante quando ninguem pediu entradas.`,
+    `O ${concedingTeam} defendeu aquilo como Governo em votacao dificil: primeiro hesitou, depois esperou que passasse.`,
+    `A organizacao do ${concedingTeam} teve mais buracos do que promessa sobre o novo aeroporto.`,
+    `O ${concedingTeam} ficou em modo revista cor-de-rosa: muita pose, pouca explicacao convincente.`,
+    `Se isto fosse Eurovisao, o ${concedingTeam} ainda estava a pedir votos ao juri quando a bola ja tinha entrado.`,
+    `A defesa do ${concedingTeam} abriu uma autoestrada tao generosa que faltou so cobrar portagem.`,
+    `O ${concedingTeam} ficou com a serenidade de quem recebe notificacao das Financas numa sexta-feira a noite.`,
+    `Foi tao facil que parecia debate europeu sobre burocracia: muita estrutura, resultado lentissimo.`,
+    `O ${concedingTeam} reagiu tarde, como comboio suburbano em dia de chuva e comunicados vagos.`,
   ];
   const text = `${pickLine(openers, seed, index)} ${pickLine(closers, seed, index + 2)}`;
 

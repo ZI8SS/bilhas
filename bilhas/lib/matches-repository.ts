@@ -132,6 +132,8 @@ export async function getMatches(): Promise<Match[]> {
           'minute', match_events.minute,
           'type', match_events.event_type::text,
           'player', players.display_name,
+          'scoringTeam', match_events.payload->>'scoringTeam',
+          'concedingTeam', match_events.payload->>'concedingTeam',
           'text', match_events.description,
           'media', NULLIF(jsonb_strip_nulls(jsonb_build_object(
             'url', match_events.media_url,

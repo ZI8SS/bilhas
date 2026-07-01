@@ -119,6 +119,7 @@ async function upsertGame(game: WorldCupGame) {
         external_id,
         minute,
         event_type,
+        payload,
         description
       )
       VALUES (
@@ -126,11 +127,16 @@ async function upsertGame(game: WorldCupGame) {
         ${eventExternalId(match.id, event.minute, event.type, event.player)},
         ${event.minute},
         ${eventType(event.type)}::match_event_type,
+        ${sql.json({
+          concedingTeam: event.concedingTeam,
+          scoringTeam: event.scoringTeam,
+        })},
         ${event.text}
       )
       ON CONFLICT (match_id, external_id) DO UPDATE SET
         minute = EXCLUDED.minute,
         event_type = EXCLUDED.event_type,
+        payload = EXCLUDED.payload,
         description = EXCLUDED.description
       RETURNING id
     `;

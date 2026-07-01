@@ -17,6 +17,8 @@ export type MatchEvent = {
   minute: string;
   type: string;
   player?: string;
+  scoringTeam?: string;
+  concedingTeam?: string;
   text: string;
   media?: TickerMedia | null;
 };
