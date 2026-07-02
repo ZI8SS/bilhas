@@ -441,7 +441,7 @@ function elapsedMinute(game: WorldCupGame, currentStatus: string, startsAt: Date
 function clockComment(game: WorldCupGame, minute: number, index: number): BilhasComment {
   const home = teamName(game.home_team_name_en);
   const away = teamName(game.away_team_name_en);
-  const seed = `${game.id}-${minute}-${home}-${away}`;
+  const seed = `${game.id}-${home}-${away}`;
   const lines = [
     `O jogo esta naquela fase em que toda a gente parece ter uma ideia, mas ninguem quer ficar com a ata.`,
     `A bola circula com a conviccao de um processo europeu: devagar, formal e sempre a prometer consequencias.`,
