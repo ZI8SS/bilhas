@@ -35,9 +35,6 @@ export default async function MatchPage({ params, searchParams }: MatchPageProps
         >
           Eventos
         </Link>
-        <Link className="button ghost" href="/">
-          Voltar
-        </Link>
       </div>
 
       {activeTab === "eventos" ? <EventFeed match={match} /> : <CommentFeed match={match} />}
