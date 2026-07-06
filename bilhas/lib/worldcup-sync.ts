@@ -17,6 +17,21 @@ type SyncStats = {
   teams: number;
 };
 
+function isDefaultSyncRelevant(game: WorldCupGame, now = new Date()) {
+  const date = parseWorldCupDate(game);
+  if (!date) return false;
+
+  const threeDaysAgo = new Date(now);
+  threeDaysAgo.setUTCDate(now.getUTCDate() - 3);
+  threeDaysAgo.setUTCHours(0, 0, 0, 0);
+
+  const fourteenDaysAhead = new Date(now);
+  fourteenDaysAhead.setUTCDate(now.getUTCDate() + 14);
+  fourteenDaysAhead.setUTCHours(23, 59, 59, 999);
+
+  return date >= threeDaysAgo && date <= fourteenDaysAhead;
+}
+
 function dbStatus(status: string) {
   const labels: Record<string, string> = {
     Agendado: "scheduled",
@@ -211,7 +226,7 @@ async function upsertGame(game: WorldCupGame) {
 
 export async function syncWorldCupToDatabase(ids?: string[]): Promise<SyncStats> {
   const games = await getWorldCupGames();
-  const selectedGames = ids?.length ? games.filter((game) => ids.includes(game.id)) : games;
+  const selectedGames = ids?.length ? games.filter((game) => ids.includes(game.id)) : games.filter((game) => isDefaultSyncRelevant(game));
   const stats: SyncStats = { comments: 0, events: 0, matches: 0, teams: 0 };
 
   for (const game of selectedGames) {
