@@ -59,7 +59,8 @@ Páginas principais:
 - `/` - jogos e frases quentes;
 - `/jogos/benfica-vitoria` - página de jogo;
 - `/frases` - ranking/arquivo de frases;
-- `/redacao` - painel editorial interno;
+- `/admin` - painel editorial interno protegido;
+- `/redacao` - redireciona para `/admin`;
 - `/api/matches` - dados mockados dos jogos;
 - `/api/suggestions` - sugestões mockadas do Bilhas.
 
@@ -86,7 +87,7 @@ DATABASE_URL="postgres://bilhas_app:uma_password_forte@127.0.0.1:5432/bilhas" pn
 DATABASE_URL="postgres://bilhas_app:uma_password_forte@127.0.0.1:5432/bilhas" pnpm db:seed
 ```
 
-Enquanto `DATABASE_URL` nao existir, a app usa dados mockados em desenvolvimento. Em producao, configurar `DATABASE_URL` e `DATABASE_SSL` quando aplicavel.
+Enquanto `DATABASE_URL` nao existir, a app usa dados mockados em desenvolvimento. Em producao, configurar `DATABASE_URL` e `DATABASE_SSL` quando aplicavel. O painel `/admin` usa Basic Auth com `ADMIN_USERNAME` e `ADMIN_PASSWORD`; se `ADMIN_PASSWORD` nao existir, usa `EDITOR_SECRET` ou `SYNC_SECRET`.
 
 ## Prototipo Estatico
 

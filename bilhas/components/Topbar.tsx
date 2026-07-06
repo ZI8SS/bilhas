@@ -13,7 +13,6 @@ export function Topbar() {
       <nav className="topnav" aria-label="Navegacao principal">
         <Link href="/">Jogos</Link>
         <Link href="/frases">Frases</Link>
-        <Link href="/redacao">Redacao</Link>
       </nav>
     </header>
   );
