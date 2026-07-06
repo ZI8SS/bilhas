@@ -27,6 +27,17 @@ jobs:
             exit 1
           fi
 
-          curl --fail-with-body --request POST \
-            --header "Authorization: Bearer $BILHAS_SYNC_SECRET" \
-            https://bilhas.vercel.app/api/sync/worldcup
+          if [ "$GITHUB_EVENT_NAME" = "push" ]; then
+            echo "Waiting briefly for Vercel to serve the latest sync code."
+            sleep 120
+          fi
+
+          for ids in \
+            "89,90,91,92,93,94" \
+            "95,96,97,98,99,100" \
+            "101,102,103,104"
+          do
+            curl --fail-with-body --request POST \
+              --header "Authorization: Bearer $BILHAS_SYNC_SECRET" \
+              "https://bilhas.vercel.app/api/sync/worldcup?ids=$ids"
+          done
