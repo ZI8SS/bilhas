@@ -272,8 +272,15 @@ function displayKickoff(date: Date | null, now = new Date()) {
 
 function status(game: WorldCupGame, now = new Date()) {
   if (game.finished?.toUpperCase() === "TRUE" || game.time_elapsed === "finished") return "Terminado";
-  if (game.time_elapsed && game.time_elapsed !== "notstarted") return "Ao vivo";
   const date = kickoffDate(game);
+  const liveWindowEnd = date ? new Date(date.getTime() + 150 * 60 * 1000) : null;
+
+  if (game.time_elapsed && game.time_elapsed !== "notstarted") {
+    if (!date || now <= liveWindowEnd!) return "Ao vivo";
+    return "Por atualizar";
+  }
+
+  if (date && now > liveWindowEnd!) return "Por atualizar";
   if (date && portugalDayKey(date) !== portugalDayKey(now)) return "Agendado";
   return "Hoje";
 }

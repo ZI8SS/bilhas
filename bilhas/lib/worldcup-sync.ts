@@ -96,7 +96,8 @@ async function upsertGame(game: WorldCupGame) {
       ${match.home.score},
       ${match.away.score}
     )
-    ON CONFLICT (public_id) DO UPDATE SET
+    ON CONFLICT (external_id) DO UPDATE SET
+      public_id = EXCLUDED.public_id,
       competition = EXCLUDED.competition,
       starts_at = EXCLUDED.starts_at,
       minute = EXCLUDED.minute,

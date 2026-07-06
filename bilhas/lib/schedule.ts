@@ -9,11 +9,19 @@ const dateFormatter = new Intl.DateTimeFormat("pt-PT", {
 const compactDateFormatter = new Intl.DateTimeFormat("pt-PT", {
   day: "2-digit",
   month: "2-digit",
+  timeZone: "Europe/Lisbon",
+});
+
+const dayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
+  day: "2-digit",
+  month: "2-digit",
+  timeZone: "Europe/Lisbon",
+  year: "numeric",
 });
 
 function dateKey(match: Match) {
   if (!match.startsAt) return "sem-data";
-  return match.startsAt.slice(0, 10);
+  return dayKeyFormatter.format(new Date(match.startsAt));
 }
 
 export function matchDateLabel(match: Match) {
@@ -29,9 +37,9 @@ export function scheduleLabel(match: Match) {
   const tomorrow = new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
-  const key = date.toISOString().slice(0, 10);
-  const todayKey = today.toISOString().slice(0, 10);
-  const tomorrowKey = tomorrow.toISOString().slice(0, 10);
+  const key = dayKeyFormatter.format(date);
+  const todayKey = dayKeyFormatter.format(today);
+  const tomorrowKey = dayKeyFormatter.format(tomorrow);
 
   if (key === todayKey) return "Hoje";
   if (key === tomorrowKey) return "Amanha";
