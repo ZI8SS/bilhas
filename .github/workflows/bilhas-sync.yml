@@ -2,6 +2,14 @@ name: Bilhas World Cup Sync
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/bilhas-sync.yml"
+      - "bilhas/lib/worldcup.ts"
+      - "bilhas/lib/worldcup-sync.ts"
+      - "bilhas/app/api/sync/worldcup/route.ts"
   schedule:
     - cron: "*/15 * * * *"
 
