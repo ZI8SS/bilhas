@@ -344,6 +344,35 @@ function pickLine(lines: string[], seed: string, offset = 0) {
   return lines[(hashText(seed) + offset * 7) % lines.length];
 }
 
+function articleForTeam(team: string) {
+  const feminine = new Set([
+    "Argentina",
+    "Belgica",
+    "Colombia",
+    "Croacia",
+    "Espanha",
+    "Franca",
+    "Inglaterra",
+    "Noruega",
+    "Suica",
+    "Suecia",
+  ]);
+
+  return feminine.has(team) ? "A" : "O";
+}
+
+function teamWithArticle(team: string) {
+  return `${articleForTeam(team)} ${team}`;
+}
+
+function teamWithLowerArticle(team: string) {
+  return `${articleForTeam(team).toLowerCase()} ${team}`;
+}
+
+function teamWithOf(team: string) {
+  return `${articleForTeam(team) === "A" ? "da" : "do"} ${team}`;
+}
+
 function commentForEvent(game: WorldCupGame, event: MatchEvent, index: number): BilhasComment {
   const home = teamName(game.home_team_name_en);
   const away = teamName(game.away_team_name_en);
@@ -354,44 +383,54 @@ function commentForEvent(game: WorldCupGame, event: MatchEvent, index: number): 
   const openers = [
     `${player} marca no ${home}-${away}.`,
     `Golo de ${player}.`,
-    `${player} apareceu na zona proibida e nao pediu licenca.`,
-    `A bola entrou, ${player} sorriu e o plano A ficou sem advogado.`,
+    `${player} apareceu na zona proibida e nem tocou a campainha.`,
+    `A bola entrou, ${player} sorriu e o plano A foi pedir baixa psicologica.`,
     `${player} finaliza e muda a temperatura do jogo.`,
-    `${scoringTeam} acaba de ganhar novo argumento: golo de ${player}.`,
+    `${teamWithArticle(scoringTeam)} acaba de ganhar novo argumento: golo de ${player}.`,
     `${player} fez o que todos prometem na flash interview: foi eficaz.`,
     `Golo. ${player} tratou a area como se tivesse reserva marcada.`,
     `${player} encostou a bola para dentro e deixou o jogo menos diplomatico.`,
     `A jogada acaba em golo de ${player}, porque alguem tinha de dar um fim ao episodio.`,
-    `${player} marcou e interrompeu a reuniao taticamente motivacional do ${concedingTeam}.`,
+    `${player} marcou e interrompeu a reuniao taticamente motivacional ${teamWithOf(concedingTeam)}.`,
     `Golo de ${player}, daqueles que entram primeiro na baliza e depois na cabeca da defesa.`,
+    `${player} resolveu o lance com a delicadeza de quem fecha a porta do Metro quando ainda vinha alguem a correr.`,
+    `Golo de ${player}. Curto, seco, e com aquele ar de talho antigo: pediu-se um corte e veio sem conversa.`,
+    `${player} meteu a bola la dentro e deixou o jogo com menos teorias e mais recibos.`,
   ];
   const closers = [
-    `O ${concedingTeam} ficou com ar de quem abriu o Excel errado em plena apresentacao.`,
+    `${teamWithArticle(concedingTeam)} ficou com ar de quem abriu o Excel errado em plena apresentacao.`,
     `Foi uma decisao tao limpa que ate num debate televisivo parecia consenso.`,
     `Se isto fosse cinema, era o momento em que a banda sonora entra e alguem percebe que devia ter corrido mais cedo.`,
-    `O ${concedingTeam} ficou a olhar para a bola como quem ve a renda de Lisboa em 2026: sem resposta e com alguma indignacao.`,
+    `${teamWithArticle(concedingTeam)} ficou a olhar para a bola como quem ve a renda de Lisboa em 2026: sem resposta e com alguma indignacao.`,
     `A marcacao desapareceu com a subtileza de uma promessa eleitoral depois das urnas fecharem.`,
     `Houve ali mais espaco do que numa explanada em janeiro, e ${player} aproveitou sem pedir manta.`,
-    `O ${concedingTeam} tentou ser adulto, mas acabou a entregar um episodio piloto de panico organizado.`,
+    `${teamWithArticle(concedingTeam)} tentou ser adulto, mas acabou a entregar um episodio piloto de panico organizado.`,
     `Nao foi magia; foi so futebol a lembrar que a concentracao tambem paga imposto.`,
     `A bola entrou com tanta naturalidade que quase parecia ter cartao de socio.`,
     `O lance teve ritmo de thriller barato: vimos o final a chegar e mesmo assim ninguem travou.`,
     `No VAR emocional, isto dava vermelho direto a metade das decisoes tomadas antes do remate.`,
     `Foi menos jogada estudada e mais "quem deixou isto acontecer?" com relvado.`,
-    `O ${concedingTeam} ficou com cara de quem acabou de perceber a clausula pequena do contrato.`,
+    `${teamWithArticle(concedingTeam)} ficou com cara de quem acabou de perceber a clausula pequena do contrato.`,
     `A baliza abriu-se como loja em saldos: muita gente entrou tarde e ninguem controlou a porta.`,
     `O lance teve aquele dramatismo de aeroporto quando o voo muda de porta e toda a gente finge calma.`,
     `Se havia plano defensivo, ficou guardado numa pasta chamada "versao_final_agora_sim_2".`,
     `A bancada percebeu antes do defesa, e isso raramente e bom sinal para o defesa.`,
     `Foi servido com a frieza de uma conta no restaurante quando ninguem pediu entradas.`,
-    `O ${concedingTeam} defendeu aquilo como Governo em votacao dificil: primeiro hesitou, depois esperou que passasse.`,
-    `A organizacao do ${concedingTeam} teve mais buracos do que promessa sobre o novo aeroporto.`,
-    `O ${concedingTeam} ficou em modo revista cor-de-rosa: muita pose, pouca explicacao convincente.`,
-    `Se isto fosse Eurovisao, o ${concedingTeam} ainda estava a pedir votos ao juri quando a bola ja tinha entrado.`,
-    `A defesa do ${concedingTeam} abriu uma autoestrada tao generosa que faltou so cobrar portagem.`,
-    `O ${concedingTeam} ficou com a serenidade de quem recebe notificacao das Financas numa sexta-feira a noite.`,
+    `${teamWithArticle(concedingTeam)} defendeu aquilo como Governo em votacao dificil: primeiro hesitou, depois esperou que passasse.`,
+    `A organizacao ${teamWithOf(concedingTeam)} teve mais buracos do que promessa sobre o novo aeroporto.`,
+    `${teamWithArticle(concedingTeam)} ficou em modo revista cor-de-rosa: muita pose, pouca explicacao convincente.`,
+    `Se isto fosse Eurovisao, ${teamWithLowerArticle(concedingTeam)} ainda estava a pedir votos ao juri quando a bola ja tinha entrado.`,
+    `A defesa ${teamWithOf(concedingTeam)} abriu uma autoestrada tao generosa que faltou so cobrar portagem.`,
+    `${teamWithArticle(concedingTeam)} ficou com a serenidade de quem recebe notificacao das Financas numa sexta-feira a noite.`,
     `Foi tao facil que parecia debate europeu sobre burocracia: muita estrutura, resultado lentissimo.`,
-    `O ${concedingTeam} reagiu tarde, como comboio suburbano em dia de chuva e comunicados vagos.`,
+    `${teamWithArticle(concedingTeam)} reagiu tarde, como comboio suburbano em dia de chuva e comunicados vagos.`,
+    `A defesa ficou a discutir responsabilidades com a urgencia de uma assembleia de condominio.`,
+    `Aquilo foi menos erro individual e mais reuniao familiar no Natal: toda a gente fala, ninguem resolve.`,
+    `O banco olhou para o relvado como quem ve a conta da luz: sabia que vinha mau, mas nao assim.`,
+    `A jogada passou pela defesa com etiqueta de "prioritario" dos CTT: surpreendentemente chegou.`,
+    `Houve mais abandono naquela zona do que numa explanada as quatro da tarde em agosto.`,
+    `A linha defensiva fez cosplay de atendimento telefonico: esteve la, mas nao ajudou ninguem.`,
+    `No resumo da noite, isto vai aparecer entre "erro evitavel" e "imagem que nao convem repetir no balneario".`,
   ];
   const text = `${pickLine(openers, seed, index)} ${pickLine(closers, seed, index + 2)}`;
 
@@ -420,6 +459,10 @@ function previewComment(game: WorldCupGame): BilhasComment {
     `Pre-jogo. ${home} e ${away} prometeram intensidade, palavra bonita que no futebol tanto quer dizer pressao alta como duas faltas e um olhar feio.`,
     `${home}-${away} esta a chegar. Pode ser drama, pode ser sono, pode ser aquele filme que so fica bom quando ja estavamos a desistir.`,
     `Daqui a pouco ha futebol. ${home}-${away}, ou como se diz tecnicamente: 90 minutos para transformar certezas em memes.`,
+    `${home}-${away} quase a comecar. As taticas estao bonitas, o problema e que a bola costuma ter opiniao propria.`,
+    `Pre-jogo de ${home}-${away}. Muita concentracao, muita garrafa de agua alinhada, e aquela fe portuguesa em que alguem vai estragar o plano ao minuto 8.`,
+    `${home}-${away} vem ai. Se correr bem, falamos de estrategia; se correr mal, chamamos-lhe "detalhes".`,
+    `Tudo pronto para ${home}-${away}. O relvado esta impecavel, que e sempre suspeito antes de noventa minutos de decisoes humanas.`,
   ];
 
   return {
@@ -448,12 +491,12 @@ function elapsedMinute(game: WorldCupGame, currentStatus: string, startsAt: Date
 function clockComment(game: WorldCupGame, minute: number, index: number): BilhasComment {
   const home = teamName(game.home_team_name_en);
   const away = teamName(game.away_team_name_en);
-  const seed = `${game.id}-${home}-${away}`;
+  const seed = `${game.id}-${home}-${away}-${minute}`;
   const lines = [
     `O jogo esta naquela fase em que toda a gente parece ter uma ideia, mas ninguem quer ficar com a ata.`,
     `A bola circula com a conviccao de um processo europeu: devagar, formal e sempre a prometer consequencias.`,
     `Ha mais estudo aqui do que numa comissao parlamentar, mas para ja menos conclusoes.`,
-    `O ${home} tenta mandar, o ${away} tenta responder, e a paciencia do espectador vai fazendo cardio.`,
+    `${teamWithArticle(home)} tenta mandar, ${teamWithLowerArticle(away)} tenta responder, e a paciencia do espectador vai fazendo cardio.`,
     `Isto esta equilibrado como orcamento familiar depois de ver a renda, portanto convem ninguem respirar demasiado forte.`,
     `O jogo entrou em modo novela das nove: toda a gente olha muito, alguem vai acabar a chorar, mas ainda nao sabemos quem.`,
     `A pressao sobe aos bocadinhos, como preco de cafe em zona turistica: ninguem gosta, todos aceitam.`,
@@ -462,14 +505,24 @@ function clockComment(game: WorldCupGame, minute: number, index: number): Bilhas
     `As duas equipas negociam territorio como ministros em Bruxelas: muitos gestos, frases longas e um acordo que fica para depois.`,
     `Se isto fosse cinema, estavamos na parte em que a realizacao mostra uma janela com chuva para dizer que algo pode acontecer.`,
     `O publico ja percebeu que isto pode dar drama ou uma sesta com estatisticas, que tambem e uma tradicao respeitavel.`,
-    `O ${away} esta a defender como quem responde "vamos ver" a todos os problemas da vida.`,
-    `O ${home} tem bola, tem intencao e tem aquele risco de transformar posse em PowerPoint sem botao de play.`,
+    `${teamWithArticle(away)} esta a defender como quem responde "vamos ver" a todos os problemas da vida.`,
+    `${teamWithArticle(home)} tem bola, tem intencao e tem aquele risco de transformar posse em PowerPoint sem botao de play.`,
     `Ainda ha tempo para tudo: golo, falhanco, VAR, ou uma opiniao muito convicta de alguem que chegou agora ao sofa.`,
     `O ritmo esta tao tactico que ate a RTP2 chamaria isto de conteudo exigente.`,
     `A coisa nao esta parada; esta so a pensar demasiado sobre si propria.`,
     `Ha ali uma ala tao aberta que uma revista social ja estaria a perguntar se ha crise na relacao.`,
+    `A posse anda de pe em pe como segredo num grupo de WhatsApp: toda a gente toca, ninguem assume.`,
+    `O jogo esta a pedir uma ideia nova, mas para ja recebeu uma fatura pro-forma e dois passes para tras.`,
+    `Ha intensidade, sim. Tambem ha aquela sensacao de jantar em que toda a gente evita falar do assunto principal.`,
+    `O meio-campo esta tao apertado que nem uma familia no IKEA discutiria com tanto contacto.`,
+    `A bola foi ao corredor e voltou, tipo pessoa que entrou no Continente so para comprar pao e saiu com duvidas existenciais.`,
+    `Neste momento a melhor movimentacao e a das opinioes no sofa, que ja trocaram de lado tres vezes.`,
+    `A defesa esta organizada, mas com aquele organizado de gaveta onde juramos que sabemos onde esta tudo.`,
+    `O jogo tem ritmo de reparticao publica: ha senhas, ha espera, e de vez em quando alguem levanta a voz.`,
+    `A pressao subiu um bocadinho. Nada de PANICO, mas ja se sente o cheiro a cafe queimado no banco.`,
+    `A bancada quer velocidade; o relvado respondeu com uma versao em modo economizador de bateria.`,
   ];
-  const text = lines[(hashText(seed) + index) % lines.length];
+  const text = lines[(hashText(seed) + index * 5) % lines.length];
 
   return {
     featured: index === 0,

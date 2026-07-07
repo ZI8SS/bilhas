@@ -3,40 +3,47 @@ import type { SuggestionRequest } from "@/lib/types";
 
 const templates: Record<SuggestionRequest["intensity"], string[]> = {
   leve: [
-    "{player} apareceu no lance com aquele ar de quem leu o briefing, mas era o briefing de outro jogo.",
-    "O lance pediu uma decisao simples. {player} respondeu com uma pequena dissertacao sobre o caos.",
-    "{player} tentou dar normalidade ao momento. A bola, como muita gente em reunioes, escolheu o caminho mais dramatico.",
-    "Ha jogadas que parecem futebol; esta pareceu uma chamada de grupo onde ninguem sabe quem esta a falar.",
-    "{player} fez o suficiente para entrar no resumo. Se era esse o objetivo, missao cumprida com algum ruido.",
-    "O jogo pediu uma nota de rodape e {player} entregou um capitulo pequeno mas inconveniente.",
-    "{player} mexeu no lance como quem mexe no comando da televisao: sem grande plano, mas alguma fe.",
+    "{minute}. {player} entrou no lance com cara de quem vinha so buscar pao e acabou numa assembleia de condominio.",
+    "{player} tentou resolver isto com calma. A bola preferiu uma abordagem mais telenovela das nove.",
+    "O lance parecia simples, que e geralmente o primeiro erro antes de uma coisa deixar de ser simples.",
+    "{player} fez ali uma coisa discreta, mas discreta como vizinho que arrasta moveis as duas da manha.",
+    "Isto teve aquele ritmo de domingo a tarde: nao muda a vida de ninguem, mas ficamos a comentar na mesma.",
+    "{player} apareceu bem. Nao salvou a patria, mas tambem nao obrigou ninguem a chamar uma reuniao de crise.",
+    "A jogada passou pelo relvado com ar de quem sabe onde vai, mesmo que o GPS esteja claramente a mentir.",
+    "{event}. Dito assim parece normal; visto com olhos, ja pede uma pequena auditoria emocional.",
   ],
   medio: [
-    "{player} tinha isto controlado ate ao instante em que o futebol pediu comprovativo. Nao havia.",
-    "O lance foi tao mal resolvido que parecia obra publica: muita gente a olhar, ninguem a assumir.",
+    "{minute}. {player} tinha isto controlado ate o futebol pedir comprovativo. Nao havia.",
+    "O lance foi resolvido com a serenidade de uma reparticao publica as 16h58: tecnicamente aberto, espiritualmente fechado.",
     "{player} entrou na jogada como quem entra num restaurante caro sem ver os precos: confiante demais, tarde demais.",
-    "A equipa tentou parecer adulta. Durou pouco, como promessa de ano novo feita a 1 de janeiro.",
-    "Isto teve energia de filme de domingo a tarde: previsivel, ligeiramente triste, e mesmo assim ficamos a ver.",
+    "A equipa tentou parecer adulta. Durou pouco, como promessa de ano novo feita ainda com passas na boca.",
+    "{event}. Ha frases que no relatorio parecem neutras; esta no relvado parecia uma notificacao das Financas.",
+    "Isto teve energia de filme portugues com baixo orcamento: muita intencao, dois sustos e alguem a olhar para longe.",
     "{player} deixou a jogada num estado que a Protecao Civil classificaria como amarelo carregado.",
     "O lance ficou tao aberto que parecia discussao sobre obras em casa: toda a gente tinha uma ideia e nenhuma resolvia.",
+    "A bola andou ali como rumor em grupo de WhatsApp: passou por muita gente e chegou ao fim mais perigosa.",
   ],
   forte: [
-    "{player} tomou uma decisao tao discutivel que ate uma caixa de comentarios do Facebook pediria moderacao.",
+    "{minute}. {player} tomou uma decisao tao discutivel que ate uma caixa de comentarios pediria intervalo.",
     "Isto nao foi azar, foi uma candidatura espontanea ao Museu Nacional das Mas Ideias.",
-    "{player} ficou tao exposto que por momentos pareceu uma conferencia de imprensa sem assessor.",
-    "A defesa abriu-se com a disciplina de uma fila de embarque low-cost. Muita intencao, zero civilizacao.",
-    "Este lance devia vir com aviso: pode ferir sensibilidades, estatisticas e contratos de renovacao.",
+    "{player} ficou tao exposto que por momentos pareceu conferencia de imprensa sem assessor e com microfone aberto.",
+    "A defesa abriu-se com a disciplina de fila de embarque low-cost: muita intencao, zero civilizacao.",
+    "{event}. Este lance devia vir com aviso: pode ferir sensibilidades, estatisticas e contratos de renovacao.",
     "{player} fez ali uma escolha com aroma a comissao parlamentar: muita explicacao futura e pouca conviccao presente.",
     "A jogada teve menos controlo do que caixa de comentarios em noite eleitoral.",
+    "Se isto fosse no Parlamento, ja havia tres versoes, duas indignacoes e uma pessoa a dizer que foi mal interpretada.",
+    "A equipa ficou a defender como quem perdeu o comando e esta a ver publicidade por respeito ao sofrimento.",
   ],
   absurdo: [
-    "A bola passou por {player} com a naturalidade de quem tem passe anual e conhece o seguranca.",
+    "A bola passou por {player} com a naturalidade de quem tem passe anual e cumprimenta o seguranca pelo nome.",
     "{player} transformou o lance num parecer juridico: longo, confuso e no fim ninguem ficou satisfeito.",
-    "Se isto fosse cinema, o realizador cortava a cena por falta de verosimilhanca.",
-    "O relvado viu coisas hoje. E, honestamente, talvez precise de acompanhamento.",
-    "A jogada teve mais buracos do que um orcamento explicado em direto na televisao.",
+    "Se isto fosse cinema, o realizador cortava a cena por falta de verosimilhanca e excesso de vergonha alheia.",
+    "O relvado viu coisas hoje. E, honestamente, talvez precise de ferias e uma conversa com alguem de confianca.",
+    "{event}. A jogada teve mais buracos do que um orcamento explicado em direto na televisao.",
     "{player} tratou o lance como cinema de autor: ninguem percebeu tudo, mas houve sofrimento com enquadramento.",
     "Isto foi tao estranho que ate o algoritmo das redes sociais pediria contexto adicional.",
+    "{minute}. A jogada parecia escrita por alguem que adormeceu no VAR e acordou num debate sobre rotundas.",
+    "Houve ali um segundo em que o futebol deixou de ser desporto e passou a ser conteudo para explicar ao jantar.",
   ],
 };
 
@@ -55,7 +62,12 @@ export async function POST(request: Request) {
   const minute = body.minute?.trim() || "agora";
 
   const suggestions = pickTemplates(intensity, `${player}-${event}-${minute}`)
-    .map((template) => template.replaceAll("{player}", player));
+    .map((template) =>
+      template
+        .replaceAll("{event}", event)
+        .replaceAll("{minute}", minute)
+        .replaceAll("{player}", player),
+    );
 
   return NextResponse.json({
     minute,
