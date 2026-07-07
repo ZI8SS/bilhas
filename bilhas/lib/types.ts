@@ -32,6 +32,11 @@ export type BilhasComment = {
   media?: TickerMedia | null;
 };
 
+export type AdminBilhasComment = BilhasComment & {
+  createdAt?: string | null;
+  publishedAt?: string | null;
+};
+
 export type Match = {
   id: string;
   competition: string;
@@ -42,6 +47,13 @@ export type Match = {
   away: Team;
   events: MatchEvent[];
   comments: BilhasComment[];
+};
+
+export type AdminMatch = Omit<Match, "comments"> & {
+  comments: AdminBilhasComment[];
+  rawStatus?: string;
+  externalId?: string | null;
+  updatedAt?: string | null;
 };
 
 export type SuggestionRequest = {

@@ -1,14 +1,16 @@
 import { matches as mockMatches } from "./data";
 import { hasDatabase, requireDatabase } from "./db";
-import type { BilhasComment, Match, MatchEvent } from "./types";
+import type { AdminBilhasComment, AdminMatch, BilhasComment, Match, MatchEvent } from "./types";
 import { getWorldCupMatches } from "./worldcup";
 
 type MatchRow = {
   public_id: string;
+  external_id?: string | null;
   competition: string;
   starts_at: Date | string | null;
   minute: string;
   status: string;
+  updated_at?: Date | string | null;
   home_name: string;
   home_short: string;
   home_color: string;
@@ -19,6 +21,10 @@ type MatchRow = {
   away_score: number | null;
   events: MatchEvent[] | null;
   comments: BilhasComment[] | null;
+};
+
+type AdminMatchRow = Omit<MatchRow, "comments"> & {
+  comments: AdminBilhasComment[] | null;
 };
 
 function lisbonDayKey(value: Date | string) {
@@ -84,6 +90,16 @@ function mapMatch(row: MatchRow): Match {
     },
     events: row.events ?? [],
     comments: row.comments ?? [],
+  };
+}
+
+function mapAdminMatch(row: AdminMatchRow): AdminMatch {
+  return {
+    ...mapMatch(row),
+    comments: row.comments ?? [],
+    externalId: row.external_id ?? null,
+    rawStatus: row.status,
+    updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : null,
   };
 }
 
@@ -187,6 +203,94 @@ export async function getMatches(): Promise<Match[]> {
 export async function getMatch(id: string): Promise<Match | undefined> {
   const allMatches = await getMatches();
   return allMatches.find((match) => match.id === id);
+}
+
+export async function getAdminMatches(): Promise<AdminMatch[]> {
+  if (!hasDatabase) {
+    const matches = await getMatches();
+    return matches.map((match) => ({
+      ...match,
+      comments: match.comments,
+      rawStatus: match.status,
+    }));
+  }
+
+  const sql = requireDatabase();
+  const rows = await sql<AdminMatchRow[]>`
+    SELECT
+      matches.public_id,
+      matches.external_id,
+      matches.competition,
+      matches.starts_at,
+      matches.minute,
+      matches.status::text AS status,
+      matches.updated_at,
+      home.name AS home_name,
+      home.short_name AS home_short,
+      home.color AS home_color,
+      matches.home_score,
+      away.name AS away_name,
+      away.short_name AS away_short,
+      away.color AS away_color,
+      matches.away_score,
+      COALESCE(events.items, '[]'::jsonb) AS events,
+      COALESCE(comments.items, '[]'::jsonb) AS comments
+    FROM matches
+    JOIN teams home ON home.id = matches.home_team_id
+    JOIN teams away ON away.id = matches.away_team_id
+    LEFT JOIN LATERAL (
+      SELECT jsonb_agg(
+        jsonb_build_object(
+          'minute', match_events.minute,
+          'type', match_events.event_type::text,
+          'player', players.display_name,
+          'scoringTeam', match_events.payload->>'scoringTeam',
+          'concedingTeam', match_events.payload->>'concedingTeam',
+          'text', match_events.description,
+          'media', NULLIF(jsonb_strip_nulls(jsonb_build_object(
+            'url', match_events.media_url,
+            'credit', match_events.media_credit,
+            'sourceUrl', match_events.media_source_url,
+            'license', match_events.media_license,
+            'kind', match_events.media_kind
+          )), '{}'::jsonb)
+        )
+        ORDER BY match_events.created_at
+      ) AS items
+      FROM match_events
+      LEFT JOIN players ON players.id = match_events.player_id
+      WHERE match_events.match_id = matches.id
+    ) events ON true
+    LEFT JOIN LATERAL (
+      SELECT jsonb_agg(
+        jsonb_build_object(
+          'id', bilhas_comments.public_id,
+          'minute', bilhas_comments.minute,
+          'intensity', bilhas_comments.intensity::text,
+          'featured', bilhas_comments.featured,
+          'text', bilhas_comments.body,
+          'createdAt', bilhas_comments.created_at,
+          'publishedAt', bilhas_comments.published_at,
+          'media', NULLIF(jsonb_strip_nulls(jsonb_build_object(
+            'url', bilhas_comments.media_url,
+            'credit', bilhas_comments.media_credit,
+            'sourceUrl', bilhas_comments.media_source_url,
+            'license', bilhas_comments.media_license,
+            'kind', bilhas_comments.media_kind
+          )), '{}'::jsonb)
+        )
+        ORDER BY
+          bilhas_comments.created_at DESC
+      ) AS items
+      FROM bilhas_comments
+      WHERE bilhas_comments.match_id = matches.id
+    ) comments ON true
+    WHERE matches.starts_at IS NULL
+      OR matches.starts_at BETWEEN now() - interval '2 days' AND now() + interval '14 days'
+    ORDER BY matches.starts_at NULLS LAST, matches.created_at
+  `;
+
+  return rows.map(mapAdminMatch);
 }
 
 export async function featuredComments() {

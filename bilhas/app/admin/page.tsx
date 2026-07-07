@@ -1,9 +1,11 @@
+import { AdminDashboard } from "@/components/AdminDashboard";
 import { RedacaoForm } from "@/components/RedacaoForm";
-import { getMatches } from "@/lib/matches-repository";
+import { getAdminMatches, getMatches } from "@/lib/matches-repository";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
+  const adminMatches = await getAdminMatches();
   const matches = await getMatches();
 
   return (
@@ -18,6 +20,7 @@ export default async function AdminPage() {
         </div>
       </section>
 
+      <AdminDashboard matches={adminMatches} />
       <RedacaoForm matches={matches} />
     </>
   );

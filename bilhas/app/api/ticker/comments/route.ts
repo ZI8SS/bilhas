@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { hasDatabase, requireDatabase } from "@/lib/db";
+import { isEditorAuthorized } from "@/lib/editor-auth";
 import type { BilhasComment } from "@/lib/types";
 
 type CreateTickerCommentRequest = {
@@ -22,16 +23,8 @@ function clean(value?: string) {
   return trimmed ? trimmed : null;
 }
 
-function isAuthorized(request: Request) {
-  const secret = process.env.EDITOR_SECRET ?? process.env.SYNC_SECRET;
-  if (process.env.NODE_ENV !== "production" && !secret) return true;
-  if (!secret) return false;
-
-  return request.headers.get("x-bilhas-editor-secret") === secret;
-}
-
 export async function POST(request: Request) {
-  if (!isAuthorized(request)) {
+  if (!isEditorAuthorized(request)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
 
