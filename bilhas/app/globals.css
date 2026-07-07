@@ -311,6 +311,25 @@ button {
   background: #f9fafb;
 }
 
+.match-row-live,
+.match-row-soon,
+.match-row-warning {
+  background:
+    linear-gradient(90deg, rgba(215, 25, 32, 0.08), transparent 46%),
+    #fff;
+}
+
+.match-row-live::before {
+  width: 8px;
+  background: var(--red);
+}
+
+.match-row-soon::before,
+.match-row-warning::before {
+  width: 8px;
+  background: linear-gradient(180deg, #f59e0b, var(--red));
+}
+
 .minute {
   display: inline-flex;
   flex-direction: column;
@@ -377,6 +396,37 @@ button {
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+.match-signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.match-signal-live {
+  border-color: rgba(215, 25, 32, 0.3);
+  background: rgba(215, 25, 32, 0.08);
+  color: var(--red);
+}
+
+.match-signal-soon,
+.match-signal-warning {
+  border-color: rgba(245, 158, 11, 0.34);
+  background: rgba(245, 158, 11, 0.12);
+  color: #92400e;
+}
+
+.match-signal-today {
+  color: var(--muted);
 }
 
 .button,

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MatchRow } from "@/components/MatchRow";
 import { scoreText } from "@/lib/data";
+import { isLiveMatch, matchSignal } from "@/lib/match-format";
 import { featuredComments, getMatches } from "@/lib/matches-repository";
 import { groupMatchesByDay } from "@/lib/schedule";
 
@@ -8,7 +9,8 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const matches = await getMatches();
-  const liveMatches = matches.filter((match) => match.status === "Ao vivo" || match.status === "A decorrer").length;
+  const liveMatches = matches.filter(isLiveMatch).length;
+  const soonMatches = matches.filter((match) => matchSignal(match)?.tone === "soon").length;
   const best = await featuredComments();
   const schedule = groupMatchesByDay(matches);
 
@@ -25,7 +27,7 @@ export default async function HomePage() {
         </div>
         <span className="pill">
           <span className="live-dot" />
-          {liveMatches} jogo ao vivo
+          {liveMatches} ao vivo · {soonMatches} quase a começar
         </span>
       </section>
 
