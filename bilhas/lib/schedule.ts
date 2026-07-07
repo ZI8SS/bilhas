@@ -42,7 +42,7 @@ export function scheduleLabel(match: Match) {
   const tomorrowKey = dayKeyFormatter.format(tomorrow);
 
   if (key === todayKey) return "Hoje";
-  if (key === tomorrowKey) return "Amanha";
+  if (key === tomorrowKey) return "Amanhã";
 
   return dateFormatter.format(date);
 }

@@ -4,7 +4,7 @@ import { MatchMedia } from "./MatchMedia";
 export function EventFeed({ match }: { match: Match }) {
   const events = match.events.length
     ? match.events
-    : [{ minute: "-", type: "Sem eventos", text: "O jogo ainda nao comecou." }];
+    : [{ minute: "-", type: "Sem eventos", text: "O jogo ainda não começou." }];
 
   return (
     <section className="feed panel">

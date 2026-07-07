@@ -12,8 +12,8 @@ export default async function AdminPage() {
         <div>
           <h1>Admin do Bilhas.</h1>
           <p>
-            Painel interno: a equipa escolhe o jogo, confirma o lance, pede sugestoes a AI e so publica depois
-            de editar/aprovar. Isto nao e uma caixa de comentarios publica.
+            Painel interno: a equipa escolhe o jogo, confirma o lance, pede sugestões à IA e só publica depois
+            de editar/aprovar. Isto não é uma caixa de comentários pública.
           </p>
         </div>
       </section>

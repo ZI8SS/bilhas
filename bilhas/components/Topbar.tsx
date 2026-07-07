@@ -7,10 +7,10 @@ export function Topbar() {
         <span className="brand-mark">B</span>
         <span>
           <strong>Bilhas</strong>
-          <small>o comentario que faltava</small>
+          <small>o comentário que faltava</small>
         </span>
       </Link>
-      <nav className="topnav" aria-label="Navegacao principal">
+      <nav className="topnav" aria-label="Navegação principal">
         <Link href="/">Jogos</Link>
         <Link href="/frases">Frases</Link>
       </nav>

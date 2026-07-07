@@ -12,7 +12,7 @@ export default async function FrasesPage() {
       <section className="screen-title">
         <div>
           <h1>As frases que sobreviveram ao jogo.</h1>
-          <p>Arquivo rapido dos comentarios mais partilhaveis. No produto real, isto vira ranking da jornada.</p>
+          <p>Arquivo rápido dos comentários mais partilháveis. No produto real, isto vira ranking da jornada.</p>
         </div>
       </section>
 

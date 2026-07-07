@@ -8,7 +8,7 @@ export function CommentFeed({ match }: { match: Match }) {
     <section className="feed panel">
       <div className="feed-header">
         <h2>O Bilhas ao minuto</h2>
-        <span className="pill">{match.comments.length} comentarios</span>
+        <span className="pill">{match.comments.length} comentários</span>
       </div>
       <div>
         {match.comments.map((comment) => (

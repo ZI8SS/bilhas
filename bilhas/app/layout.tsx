@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Bilhas",
-  description: "Live score portugues com comentario humoristico ao vivo.",
+  description: "Live score português com comentário humorístico ao vivo.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

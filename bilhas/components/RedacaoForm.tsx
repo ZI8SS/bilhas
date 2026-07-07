@@ -23,7 +23,7 @@ export function RedacaoForm({ matches }: { matches: Match[] }) {
     minute: "73'",
     player: "Bruno Varela",
     intensity: "medio",
-    event: "Bruno Varela deixa escapar um remate defensavel de fora da area.",
+    event: "Bruno Varela deixa escapar um remate defensável de fora da área.",
     mediaUrl: "",
     mediaCredit: "",
     mediaSourceUrl: "",
@@ -72,7 +72,7 @@ export function RedacaoForm({ matches }: { matches: Match[] }) {
     setPublishing(false);
 
     if (!response.ok || !data.ok) {
-      setPublishState({ error: data.error ?? "Nao foi possivel publicar." });
+      setPublishState({ error: data.error ?? "Não foi possível publicar." });
       return;
     }
 
@@ -86,7 +86,7 @@ export function RedacaoForm({ matches }: { matches: Match[] }) {
   return (
     <section className="layout">
       <form className="admin-panel panel" onSubmit={submit}>
-        <h2>Gerar sugestoes internas</h2>
+        <h2>Gerar sugestões internas</h2>
         <div className="form-grid">
           <label>
             Jogo
@@ -113,7 +113,7 @@ export function RedacaoForm({ matches }: { matches: Match[] }) {
               onChange={(event) => update("intensity", event.target.value as SuggestionRequest["intensity"])}
             >
               <option value="leve">leve</option>
-              <option value="medio">medio</option>
+              <option value="medio">médio</option>
               <option value="forte">forte</option>
               <option value="absurdo">absurdo</option>
             </select>
@@ -131,17 +131,17 @@ export function RedacaoForm({ matches }: { matches: Match[] }) {
             />
           </label>
           <label>
-            Credito da imagem
+            Crédito da imagem
             <input
-              placeholder="Ex: IMAGO / Getty / fotografo"
+              placeholder="Ex: IMAGO / Getty / fotógrafo"
               value={form.mediaCredit}
               onChange={(event) => update("mediaCredit", event.target.value)}
             />
           </label>
           <label>
-            Fonte/licenca
+            Fonte/licença
             <input
-              placeholder="Ex: Licenca editorial, embed autorizado..."
+              placeholder="Ex: Licença editorial, embed autorizado..."
               value={form.mediaLicense}
               onChange={(event) => update("mediaLicense", event.target.value)}
             />
@@ -157,7 +157,7 @@ export function RedacaoForm({ matches }: { matches: Match[] }) {
           <label>
             Chave editorial
             <input
-              placeholder="Obrigatoria em producao"
+              placeholder="Obrigatória em produção"
               type="password"
               value={editorSecret}
               onChange={(event) => setEditorSecret(event.target.value)}
@@ -170,13 +170,13 @@ export function RedacaoForm({ matches }: { matches: Match[] }) {
       </form>
 
       <aside className="side-panel panel">
-        <h2>Sugestoes</h2>
+        <h2>Sugestões</h2>
         <div className="generated">
           {suggestions.length ? (
             suggestions.map((suggestion, index) => (
               <div className="best-quote" key={suggestion}>
                 <strong>
-                  {form.minute} · {form.intensity} · opcao {index + 1}
+                  {form.minute} · {form.intensity} · opção {index + 1}
                 </strong>
                 <p>{suggestion}</p>
                 <button className="button primary" disabled={publishing} type="button" onClick={() => publish(suggestion)}>
@@ -185,7 +185,7 @@ export function RedacaoForm({ matches }: { matches: Match[] }) {
               </div>
             ))
           ) : (
-            <p className="pill">As frases aparecem aqui para a redacao escolher e afinar.</p>
+            <p className="pill">As frases aparecem aqui para a redação escolher e afinar.</p>
           )}
           {publishState.ok ? <p className="pill success">{publishState.ok}</p> : null}
           {publishState.error ? <p className="pill danger">{publishState.error}</p> : null}
