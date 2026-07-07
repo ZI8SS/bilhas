@@ -2,6 +2,7 @@ import { matches as mockMatches } from "./data";
 import { hasDatabase, requireDatabase } from "./db";
 import type { AdminBilhasComment, AdminMatch, BilhasComment, Match, MatchEvent } from "./types";
 import { getWorldCupMatches } from "./worldcup";
+import { syncWorldCupToDatabase } from "./worldcup-sync";
 
 type MatchRow = {
   public_id: string;
@@ -10,7 +11,7 @@ type MatchRow = {
   starts_at: Date | string | null;
   minute: string;
   status: string;
-  updated_at?: Date | string | null;
+  updated_at: Date | string | null;
   home_name: string;
   home_short: string;
   home_color: string;
@@ -76,6 +77,7 @@ function mapMatch(row: MatchRow): Match {
     minute: row.minute,
     status: readableStatus(row),
     startsAt: row.starts_at ? new Date(row.starts_at).toISOString() : null,
+    updatedAt: row.updated_at ? new Date(row.updated_at).toISOString() : null,
     home: {
       name: row.home_name,
       short: row.home_short,
@@ -91,6 +93,28 @@ function mapMatch(row: MatchRow): Match {
     events: row.events ?? [],
     comments: row.comments ?? [],
   };
+}
+
+let lastAutoSyncAt = 0;
+let autoSyncPromise: Promise<void> | null = null;
+
+async function autoSyncRecentWorldCupData() {
+  if (process.env.AUTO_SYNC_ON_READ === "false") return;
+
+  const now = Date.now();
+  if (now - lastAutoSyncAt < 55_000) return;
+
+  lastAutoSyncAt = now;
+  autoSyncPromise ??= syncWorldCupToDatabase()
+    .then(() => undefined)
+    .catch((error) => {
+      console.error("World Cup auto sync failed.", error);
+    })
+    .finally(() => {
+      autoSyncPromise = null;
+    });
+
+  await autoSyncPromise;
 }
 
 function mapAdminMatch(row: AdminMatchRow): AdminMatch {
@@ -120,6 +144,8 @@ export async function getMatches(): Promise<Match[]> {
     return mockMatches;
   }
 
+  await autoSyncRecentWorldCupData();
+
   const sql = requireDatabase();
   const rows = await sql<MatchRow[]>`
     SELECT
@@ -128,6 +154,7 @@ export async function getMatches(): Promise<Match[]> {
       matches.starts_at,
       matches.minute,
       matches.status::text AS status,
+      matches.updated_at,
       home.name AS home_name,
       home.short_name AS home_short,
       home.color AS home_color,

@@ -280,6 +280,7 @@ function status(game: WorldCupGame, now = new Date()) {
     return "Por atualizar";
   }
 
+  if (date && now >= date && now <= liveWindowEnd!) return "Por atualizar";
   if (date && now > liveWindowEnd!) return "Por atualizar";
   if (date && portugalDayKey(date) !== portugalDayKey(now)) return "Agendado";
   return "Hoje";

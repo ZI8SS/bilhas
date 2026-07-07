@@ -43,6 +43,7 @@ export type Match = {
   minute: string;
   status: string;
   startsAt?: string | null;
+  updatedAt?: string | null;
   home: Team;
   away: Team;
   events: MatchEvent[];

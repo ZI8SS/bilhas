@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CommentFeed } from "@/components/CommentFeed";
 import { EventFeed } from "@/components/EventFeed";
+import { LiveRefresh } from "@/components/LiveRefresh";
+import { MatchFacts } from "@/components/MatchFacts";
 import { MatchHero } from "@/components/MatchHero";
 import { getMatch } from "@/lib/matches-repository";
 
@@ -24,6 +26,8 @@ export default async function MatchPage({ params, searchParams }: MatchPageProps
   return (
     <>
       <MatchHero match={match} />
+      <LiveRefresh updatedAt={match.updatedAt} />
+      <MatchFacts match={match} />
 
       <div className="match-tabs" role="tablist" aria-label="Conteudo do jogo">
         <Link className={`tab-button ${activeTab === "bilhas" ? "active" : ""}`} href={`/jogos/${match.id}`}>

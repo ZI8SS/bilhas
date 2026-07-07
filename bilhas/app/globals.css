@@ -597,6 +597,57 @@ button {
   margin: 14px 0;
 }
 
+.live-refresh {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border: 1px solid rgba(215, 25, 32, 0.18);
+  border-radius: 10px;
+  background: rgba(215, 25, 32, 0.06);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.live-refresh small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.match-facts {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.match-fact {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.match-fact span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.match-fact strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
 .tab-button {
   min-height: 38px;
   padding: 8px 12px;
@@ -1013,6 +1064,10 @@ button {
 
   .match-heading {
     grid-template-columns: 1fr;
+  }
+
+  .match-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .scoreboard {
