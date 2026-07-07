@@ -1,3 +1,4 @@
+import { ReactionButtons } from "@/components/ReactionButtons";
 import { ShareButtons } from "@/components/ShareButtons";
 import { scoreText } from "@/lib/data";
 import { featuredComments } from "@/lib/matches-repository";
@@ -26,6 +27,7 @@ export default async function FrasesPage() {
                 <small>
                   {match.home.short} {scoreText(match)} {match.away.short}
                 </small>
+                <ReactionButtons commentId={comment.id} />
               </div>
               <ShareButtons
                 title={`Bilhas · ${match.home.short} ${scoreText(match)} ${match.away.short}`}

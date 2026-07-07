@@ -1,6 +1,7 @@
 import { scoreText } from "@/lib/data";
 import type { Match } from "@/lib/types";
 import { MatchMedia } from "./MatchMedia";
+import { ReactionButtons } from "./ReactionButtons";
 import { ShareButtons } from "./ShareButtons";
 
 export function CommentFeed({ match }: { match: Match }) {
@@ -17,10 +18,7 @@ export function CommentFeed({ match }: { match: Match }) {
             <div className="comment-body">
               <MatchMedia media={comment.media} />
               <p>{comment.text}</p>
-              <small>
-                {comment.intensity}
-                {comment.featured ? " · frase quente" : ""}
-              </small>
+              <ReactionButtons commentId={comment.id} />
             </div>
             <ShareButtons
               title={`Bilhas · ${match.home.short} ${scoreText(match)} ${match.away.short}`}
