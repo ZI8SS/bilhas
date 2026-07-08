@@ -98,7 +98,7 @@ function mapMatch(row: MatchRow): Match {
 let lastAutoSyncAt = 0;
 let autoSyncPromise: Promise<void> | null = null;
 
-async function autoSyncRecentWorldCupData() {
+function autoSyncRecentWorldCupData() {
   if (process.env.AUTO_SYNC_ON_READ === "false") return;
 
   const now = Date.now();
@@ -113,8 +113,6 @@ async function autoSyncRecentWorldCupData() {
     .finally(() => {
       autoSyncPromise = null;
     });
-
-  await autoSyncPromise;
 }
 
 function mapAdminMatch(row: AdminMatchRow): AdminMatch {
@@ -144,7 +142,7 @@ export async function getMatches(): Promise<Match[]> {
     return mockMatches;
   }
 
-  await autoSyncRecentWorldCupData();
+  autoSyncRecentWorldCupData();
 
   const sql = requireDatabase();
   const rows = await sql<MatchRow[]>`

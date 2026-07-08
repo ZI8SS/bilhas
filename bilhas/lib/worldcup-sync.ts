@@ -221,6 +221,23 @@ async function upsertGame(game: WorldCupGame) {
     `;
   }
 
+  if (match.comments.length > 0) {
+    const visibleRows = await sql<{ count: string }[]>`
+      SELECT count(*) AS count
+      FROM bilhas_comments
+      WHERE match_id = ${matchId}
+        AND published_at IS NOT NULL
+    `;
+
+    if (Number(visibleRows[0]?.count ?? 0) === 0) {
+      await sql`
+        UPDATE bilhas_comments
+        SET published_at = now(), updated_at = now()
+        WHERE public_id = ${match.comments[0].id}
+      `;
+    }
+  }
+
   return { comments, events, matches: 1, teams: 2 };
 }
 
