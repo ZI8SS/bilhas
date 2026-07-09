@@ -193,9 +193,10 @@ async function upsertGame(game: WorldCupGame) {
     comments += rows.length;
   }
 
-  if (match.events.length > 0) {
-    const automaticCommentIds = match.comments.map((comment) => comment.id);
+  const automaticCommentIds = match.comments.map((comment) => comment.id);
+  const hasAutomaticLiveComments = automaticCommentIds.some((id) => id !== `wc-${game.id}-pre`);
 
+  if (hasAutomaticLiveComments) {
     await sql`
       UPDATE bilhas_comments
       SET published_at = NULL, updated_at = now()

@@ -593,11 +593,13 @@ function mapGame(game: WorldCupGame): Match {
   const currentStatus = status(game);
   const startsAt = kickoffDate(game);
   const tickerComments = clockComments(game, events, currentStatus, startsAt);
+  const liveComments = [
+    ...tickerComments,
+    ...events.map((event, index) => commentForEvent(game, event, index)),
+  ].sort((left, right) => commentMinuteOrder(left) - commentMinuteOrder(right));
   const comments = hasNamedTeams
-    ? events.length > 0
-      ? [...tickerComments, ...events.map((event, index) => commentForEvent(game, event, index))].sort(
-          (left, right) => commentMinuteOrder(left) - commentMinuteOrder(right),
-        )
+    ? liveComments.length > 0
+      ? liveComments
       : [previewComment(game)]
     : [];
 
